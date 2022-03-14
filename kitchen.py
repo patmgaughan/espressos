@@ -21,6 +21,19 @@ class Kitchen:
     WIDTH  = 7
     HEIGHT = 7
 
+    def __str__(self):
+        result = ""
+        # assumes player1 is not null currently
+        if (self.player1 != None):
+            result += self.player1.inventory() + "\n"
+        for row in self.floor:
+            for sqft in row:
+                result += str(sqft) + " "
+            result += "\n"
+        result += "--------------\n"
+        return result
+
+
     def __init__(self):
         self.floor = [[SquareFoot()for i in range(Kitchen.WIDTH)] \
                       for i in range(Kitchen.HEIGHT)]
