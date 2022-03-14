@@ -12,7 +12,7 @@ class Tank:
         if(self.col % 2) == 0:
             return "\033[96m>\033[00m"
         else:
-            return "\033[96mo\033[00m"
+            return "\033[96mQ\033[00m"
 
     def name(self):
         return "tank"

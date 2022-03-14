@@ -8,7 +8,7 @@ class WorkStation:
         self.kitchen.put(self, row, col)
 
     def toString(self):
-        return "\033[96m#\033[00m"
+        return "\033[93m#\033[00m"
         #return "\u001b[46m#\033[00m"
 
     def name(self):

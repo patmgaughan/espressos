@@ -69,6 +69,9 @@ def setUpKitchen(kitchen):
 
     WorkStation(kitchen, 3, 3)
     WorkStation(kitchen, 3, 4)
+    WorkStation(kitchen, 3, 5)
+    WorkStation(kitchen, 3, 6)
+    WorkStation(kitchen, 3, 7)
 
     return player1
 

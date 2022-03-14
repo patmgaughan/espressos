@@ -11,7 +11,7 @@ class SquareFoot:
 
     def __str__(self):
         if(self.empty):
-            return "\033[30m-\033[00m"
+            return "\033[30m \033[00m"
         else:
             return self.holding.toString()
 
