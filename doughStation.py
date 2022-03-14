@@ -8,7 +8,7 @@ class DoughStation:
         self.kitchen.put(self, row, col)
 
     def toString(self):
-        return "\033[95mT\033[00m"
+        return "\033[95m=\033[00m"
 
     def name(self):
         return "doughStation"

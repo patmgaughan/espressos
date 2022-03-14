@@ -8,7 +8,7 @@ class Fridge:
         self.kitchen.put(self, row, col)
 
     def toString(self):
-        return "\033[34mF\033[00m"
+        return "\033[34m[\033[00m"
 
     def name(self):
         return "fridge"

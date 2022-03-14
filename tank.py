@@ -9,7 +9,10 @@ class Tank:
         self.kitchen.put(self, row, col)
 
     def toString(self):
-        return "\033[96m~\033[00m"
+        if(self.col % 2) == 0:
+            return "\033[96m>\033[00m"
+        else:
+            return "\033[96mo\033[00m"
 
     def name(self):
         return "tank"

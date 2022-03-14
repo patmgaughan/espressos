@@ -18,7 +18,7 @@ class SquareFoot:
 # this should be a singleton
 # i.e. there should only ever be one kitchen
 class Kitchen:
-    WIDTH  = 7
+    WIDTH  = 8
     HEIGHT = 7
 
     def __init__(self):

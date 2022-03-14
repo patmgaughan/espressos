@@ -47,24 +47,24 @@ def run(kitchen, player1):
 def setUpKitchen(kitchen):
     player1 = Cook(kitchen, 4, 3, "player1")
     #add ovens
-    Oven(kitchen, 2, 0)
     Oven(kitchen, 3, 0)
+    Oven(kitchen, 4, 0)
 
     Counter(kitchen, 0, 2)
     Counter(kitchen, 0, 3)
     Counter(kitchen, 0, 4)
 
-    Fridge(kitchen, 4, 6)
-    Fridge(kitchen, 5, 6)
+    Fridge(kitchen, 4, 7)
+    Fridge(kitchen, 5, 7)
     DoughStation(kitchen, 6, 2)
     DoughStation(kitchen, 6, 3)
     DoughStation(kitchen, 6, 4)
     Stove(kitchen, 6, 5)
     Tank(kitchen, 0, 0)
     Tank(kitchen, 0, 1)
-    ToppingCounter(kitchen, 0, 6)
-    ToppingCounter(kitchen, 1, 6)
-    ToppingCounter(kitchen, 2, 6)
+    ToppingCounter(kitchen, 0, 7)
+    ToppingCounter(kitchen, 1, 7)
+    ToppingCounter(kitchen, 2, 7)
     TrashCan(kitchen, 6, 0)
 
     WorkStation(kitchen, 3, 3)
