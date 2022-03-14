@@ -1,5 +1,7 @@
-#applience
-class Oven:
+# applience
+# green peppers, onions, olives
+# peperoni & ham?
+class ToppingCounter:
 
     def __init__(self, kitchen, row, col):
         self.kitchen = kitchen
@@ -8,9 +10,8 @@ class Oven:
         self.kitchen.put(self, row, col)
 
     def toString(self):
-        return "\033[91;1m@\033[00m"
+        #return "\033[92m!\033[00m"
+        return "\u001b[42m!\033[00m"
 
     def name(self):
-        return "oven"
-
-    #later this will maybe keep track of something?
+        return "toppingCounter"

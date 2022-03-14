@@ -2,6 +2,13 @@ from kitchen import Kitchen
 from cook import Cook
 from oven import Oven
 from counter import Counter
+from fridge import Fridge
+from doughStation import DoughStation
+from stove import Stove
+from tank import Tank
+from toppingCounter import ToppingCounter
+from trashCan import TrashCan
+from workStation import WorkStation
 import sys
 
 # i think most manipulation is
@@ -37,15 +44,38 @@ def run(kitchen, player1):
             break
         kitchen.print()
 
+def setUpKitchen(kitchen):
+    player1 = Cook(kitchen, 4, 3, "player1")
+    #add ovens
+    Oven(kitchen, 2, 0)
+    Oven(kitchen, 3, 0)
+
+    Counter(kitchen, 0, 2)
+    Counter(kitchen, 0, 3)
+    Counter(kitchen, 0, 4)
+
+    Fridge(kitchen, 4, 6)
+    Fridge(kitchen, 5, 6)
+    DoughStation(kitchen, 6, 2)
+    DoughStation(kitchen, 6, 3)
+    DoughStation(kitchen, 6, 4)
+    Stove(kitchen, 6, 5)
+    Tank(kitchen, 0, 0)
+    Tank(kitchen, 0, 1)
+    ToppingCounter(kitchen, 0, 6)
+    ToppingCounter(kitchen, 1, 6)
+    ToppingCounter(kitchen, 2, 6)
+    TrashCan(kitchen, 6, 0)
+
+    WorkStation(kitchen, 3, 3)
+    WorkStation(kitchen, 3, 4)
+
+    return player1
+
 def main():
     kitchen = Kitchen()
     kitchen.print()
-    player1 = Cook(kitchen, 3, 3, "player1")
-    #add ovens
-    Oven(kitchen, 6, 6)
-    Oven(kitchen, 6, 5)
-    Counter(kitchen, 2, 0)
-    Counter(kitchen, 3, 0)
+    player1 = setUpKitchen(kitchen)
 
     print("Welcome to Espresso's")
     kitchen.print()
