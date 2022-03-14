@@ -1,5 +1,5 @@
 #applience
-class Oven:
+class Stove:
 
     def __init__(self, kitchen, row, col):
         self.kitchen = kitchen
@@ -8,9 +8,7 @@ class Oven:
         self.kitchen.put(self, row, col)
 
     def toString(self):
-        return "\033[91;1m@\033[00m"
+        return "\033[91m%\033[00m"
 
     def name(self):
-        return "oven"
-
-    #later this will maybe keep track of something?
+        return "stove"

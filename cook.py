@@ -15,7 +15,7 @@ class Cook:
         self.pizzaCount = 0
 
     def toString(self):
-        return "\033[92m*\033[00m"
+        return "\033[99m*\033[00m"
 
     def name(self):
         return self.fname
