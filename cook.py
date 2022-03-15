@@ -12,7 +12,8 @@ class Cook:
         self.kitchen.player1 = self
         self.row = row
         self.fname = fname
-        self.pizzaCount = 0
+        self.pizzaCount = 0 #this will change
+        self.holding = None
 
     def toString(self):
         return "\033[99m*\033[00m"
@@ -23,28 +24,69 @@ class Cook:
     def givePizza(self):
         self.pizzaCount += 1
 
+    def emptyHands(self):
+        item = self.holding
+        self.holding = None
+        return item
+
+    def give(self, item):
+        if(self.holding == None):
+            self.holding = item
+        else:
+            print("My Hands are full!")
+
     def takePizza(self):
         self.pizzaCount -= 1
     
     def inventory(self):
-        return self.name() + " holds " + str(self.pizzaCount) + " Pizzas"
+        return self.name() + " holds " + str(self.holding)
 
     #these next 2 functions will be made into 1 function
-    def nextToOven(self):
-        nextToOven = False
-        nextToOven = nextToOven or self.kitchen.isOven(self.row+1, self.col)
-        nextToOven = nextToOven or self.kitchen.isOven(self.row-1, self.col)
-        nextToOven = nextToOven or self.kitchen.isOven(self.row, self.col+1)
-        nextToOven = nextToOven or self.kitchen.isOven(self.row, self.col-1)
-        return nextToOven
-
-    def nextToCounter(self):
+    def nextTo(self, item):
         nextTo = False
-        nextTo = nextTo or self.kitchen.isCounter(self.row+1, self.col)
-        nextTo = nextTo or self.kitchen.isCounter(self.row-1, self.col)
-        nextTo = nextTo or self.kitchen.isCounter(self.row, self.col+1)
-        nextTo = nextTo or self.kitchen.isCounter(self.row, self.col-1)
+        nextTo = nextTo or self.kitchen.isA(item, self.row+1, self.col)
+        nextTo = nextTo or self.kitchen.isA(item, self.row-1, self.col)
+        nextTo = nextTo or self.kitchen.isA(item, self.row, self.col+1)
+        nextTo = nextTo or self.kitchen.isA(item, self.row, self.col-1)
         return nextTo
+
+    def nextToObject(self, item):
+        nextTo = False
+        item = None
+
+        nextTo = nextTo or self.kitchen.isA(item, self.row+1, self.col)
+        if(self.kitchen.isA(item, self.row+1, self.col)):
+            item = self.kitchen.floor[self.row+1][self.col].holding
+
+        nextTo = nextTo or self.kitchen.isA(item, self.row-1, self.col)
+        if(self.kitchen.isA(item, self.row-1, self.col)):
+            item = self.kitchen.floor[self.row-1][self.col].holding
+
+        nextTo = nextTo or self.kitchen.isA(item, self.row, self.col+1)
+        if(self.kitchen.isA(item, self.row, self.col+1)):
+            item = self.kitchen.floor[self.row][self.col+1].holding
+
+        nextTo = nextTo or self.kitchen.isA(item, self.row, self.col-1)
+        if(self.kitchen.isA(item, self.row, self.col-1)):
+            item = self.kitchen.floor[self.row][self.col-1].holding
+
+        return item
+
+    # def nextToOven(self):
+    #     nextToOven = False
+    #     nextToOven = nextToOven or self.kitchen.isOven(self.row+1, self.col)
+    #     nextToOven = nextToOven or self.kitchen.isOven(self.row-1, self.col)
+    #     nextToOven = nextToOven or self.kitchen.isOven(self.row, self.col+1)
+    #     nextToOven = nextToOven or self.kitchen.isOven(self.row, self.col-1)
+    #     return nextToOven
+
+    # def nextToCounter(self):
+    #     nextTo = False
+    #     nextTo = nextTo or self.kitchen.isCounter(self.row+1, self.col)
+    #     nextTo = nextTo or self.kitchen.isCounter(self.row-1, self.col)
+    #     nextTo = nextTo or self.kitchen.isCounter(self.row, self.col+1)
+    #     nextTo = nextTo or self.kitchen.isCounter(self.row, self.col-1)
+    #     return nextTo
 
     #cook is gunna move around in the kitchen
     def moveDown(self):

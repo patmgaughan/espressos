@@ -27,18 +27,58 @@ def run(kitchen, player1):
         elif(command == "d"):
             player1.moveRight()
         elif(command == "make_pizza"):
-            if(player1.nextToOven()):
+            if(player1.nextTo("oven")):
                 player1.givePizza()
             else:
                 print("Can't make pizza, not next to oven")
+        elif(command == "get_dough"):
+            if(player1.nextTo("doughStation")):
+                player1.give("dough")
+            else:
+                print("Can't get dough, not next to dough Station")
+        elif(command == "get_sauce"):
+            if(player1.nextTo("stove")):
+                player1.give("sauce")
+            else:
+                print("Can't get sauce, not next to stove")
+        elif(command == "get_cheese"):
+            if(player1.nextTo("fridge")):
+                player1.give("cheese")
+            else:
+                print("Can't get cheese, not next to fridge")
+        elif(command == "get_vegan_cheese"):
+            if(player1.nextTo("fridge")):
+                player1.give("vegan_cheese")
+            else:
+                print("Can't get cheese, not next to fridge")
+        elif(command == "get_anchovies"):
+            if(player1.nextTo("tank")):
+                player1.give("anchovies")
+            else:
+                print("Can't get anchovies, not next to fish Tank")
         elif(command == "serve_pizza"):
-            if(player1.nextToCounter()):
+            if(player1.nextTo("counter")):
                 if(player1.pizzaCount == 0):
                     print("Player 1 has no pizzas to serve")
                 else:
                     player1.takePizza()
             else:
                 print("Can't serve pizza, not next to counter")
+        elif(command == "put"): #trys to put whatever you hold down at the workstation
+            #this is a more complex command
+            if(player1.nextTo("workStation")):
+                workstation = player1.nextToObject("workStation") # this function is the same funct but returns the object
+                if(player1.holding != None):
+                    #should give us a string
+                    item = player1.emptyHands()
+                    print("Player 1 is holding " + item)
+                    if(workstation == None):
+                        print("ERROR workstation is null!!!")
+                    #workstation.holding = item # put what I was holding at the workstation
+                else: 
+                    print("You're not holding anything")
+            else:
+                print("Can't put down item, not next to workstation")
         elif(command == "q"):
             print("Pini's Pizza has bought Espressos")
             break

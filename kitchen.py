@@ -60,6 +60,14 @@ class Kitchen:
             return True
         return False
 
+    def isA(self, item, row, col):
+        if(self.outOfBounds(row, col)):
+            return False
+        elif(self.floor[row][col].empty):
+            return False
+        elif(self.floor[row][col].holding.name() == item):
+            return True
+
     def isOven(self, row, col):
         #print("checking if oven")
         if(self.outOfBounds(row, col)):
