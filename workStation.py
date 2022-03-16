@@ -23,8 +23,17 @@ class WorkStation:
             #then search up that color
             #in the applience and its color
             return "\033[95m#\033[00m"
-        else:
+        elif(self.holding.toString() == "cheesy pizza"):
+            #search up what the color with via
+            #pizza last ingreduent
+            #then search that up in the pantry
+            #then search up that color
+            #in the applience and its color
+            return "\033[34m#\033[00m"
+        elif(self.holding.toString() == "sauced pizza"):
             return "\033[91m#\033[00m"
+        else:
+            return "\033[92m#\033[00m"
             #return "\u001b[46m#\033[00m"
 
     #item must be dough or a pizza
@@ -32,21 +41,41 @@ class WorkStation:
     def put(self, item):
         #if the item isn't dough AND we dont hold a pizza
         pizza = self.holding
+
+        #if item is pizza and counter empty
+        if((isinstance(item, Pizza)) and (pizza == None)):
+            self.holding = item
+            print("Workstation holds " + self.holding.toString())
+            return None
+
+        #make sure workstation has a pizza or were adding dough
         if((item != "dough") and (pizza == None)):
             print("Error cannot put this on workstaton")
             return item
 
+        #change this later to be a part of addTopping()
         if(item == "dough"):
             #workstation must be null
             #pizza is created at workstation
             if(pizza == None):
                 self.holding = Pizza() #which is just dough
                 item = None
-        if(item == "sauce"):
-            #pizza must be unsauced
-            #add check
+        elif(item == "sauce"):
+            if(pizza.cheese != None):
+                print("cannot add sauce, this pizza already has cheese")
+                return item
             pizza.sauced = True
             item = None
+        elif(item == "cheese" or item == "vegan_cheese"):  
+            if(pizza.cheese != None):
+                print("Pizza already has cheese, and Espressos is not made of cheese")
+                return item
+            pizza.cheese = item
+            item = None
+        else:
+            item = pizza.addTopping(item)
+
+            #make sure the pizza doesn't already have this topping
         #item is now a pizza
         #self.holding = item
 

@@ -25,20 +25,39 @@ class Pizza:
     #I'll fix
     def toString(self):
         #fi
+        output = ""
         if(self.isDough()):
-            return "pizza dough"
+            output = "pizza dough"
+        elif(self.cheese != None):
+            output = "cheesy pizza"
         else:
-            return "pizza"
+            output = "sauced pizza"
+
+        if(self.toppings != set()):
+            output += (" " + str(self.toppings))
+
+        return output
 
     def name(self):
         return "Pizza"
 
     # takes in the topping as a string
     # an error if the topping is not a possible topping
+    #return topping if it can't be added, None otherwise
     def addTopping(self, topping):
-        None
+        #None
         #see if it exists in topping
+        if(not (topping in self.possibleToppings)):
+            print("ERROR: This is not a possible topping")
+            return topping
             #else, there was an error with fun calls
+        elif(topping in self.toppings):
+            print("This topping has already been added to the Pizza")
+            return topping
+        else:
+            self.toppings.add(topping)
+            return None
+
 
         #if sauce
             #make sure toppings and cheese empty -> else ruined

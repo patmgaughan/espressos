@@ -1,5 +1,6 @@
 from tokenize import cookie_re
 from kitchen import Kitchen
+from pizza import Pizza
 
 
 class Cook:
@@ -39,6 +40,8 @@ class Cook:
         self.pizzaCount -= 1
     
     def inventory(self):
+        if(isinstance(self.holding, Pizza)):
+            return self.name() + " holds " + self.holding.toString()
         return self.name() + " holds " + str(self.holding)
 
     #these next 2 functions will be made into 1 function

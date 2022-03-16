@@ -33,6 +33,9 @@ pantry = {
 #error if its given a non ingredient
 #command function
 def get_(ingredient, player):
+    if(not (ingredient in pantry)):
+        print("Ingredient \"" + ingredient + "\" unknown: try \"-h\"")
+        return
     if(player.nextTo(pantry[ingredient])):
         player.give(ingredient)
     else:
@@ -83,6 +86,17 @@ def run(kitchen, player1):
             #next thing to write
             #when you take somthing you will become the color of that thing
             #you 
+        elif(command == "take"):
+            if(player1.nextTo("workStation")):
+                workstation = player1.nextToObject("workStation")
+                item = workstation.holding
+                if(item != None):
+                    player1.give(workstation.holding)
+                    workstation.holding = None
+                else:
+                    print("Error workstation empty")
+            else:
+                print("Error not next to workstation")
         #command to give to the counter
         elif(command == "trash"):
             if(player1.nextTo("trashCan")):
@@ -98,7 +112,7 @@ def run(kitchen, player1):
 
 def setUpKitchen(kitchen):
     #have it ask for your name
-    player1 = Cook(kitchen, 4, 3, "Jackson")
+    player1 = Cook(kitchen, 4, 3, "Dylan")
     # add ovens
     Oven(kitchen, 3, 0)
     Oven(kitchen, 4, 0)
