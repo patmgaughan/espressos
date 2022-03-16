@@ -10,6 +10,51 @@ from toppingCounter import ToppingCounter
 from trashCan import TrashCan
 from workStation import WorkStation
 import sys
+from pizza import Pizza
+# make an appliacne thing that holds all the applinces
+
+
+# global read only pantry
+# maps ingredients to locations
+# you get them from
+pantry = {
+    "dough":"doughStation", 
+    "sauce":"stove",
+    "cheese":"fridge",
+    "vegan_cheese":"fridge",
+    "anchovies":"tank",
+    "ham":"toppingsCounter",
+    "pepperoni":"toppingCounter",
+    "olives":"toppingCounter",
+    "onions":"toppingCounter",
+    "green_peppers":"toppingCounter"
+}
+
+#error if its given a non ingredient
+#command function
+def get_(ingredient, player):
+    if(player.nextTo(pantry[ingredient])):
+        player.give(ingredient)
+    else:
+        print("Can't get " + str(ingredient) + ", not standing next to " + \
+               str(pantry[ingredient]))
+
+#command
+def put(player):
+#this is a more complex command
+    if(player.nextTo("workStation")):
+        workstation = player.nextToObject("workStation") # this function is the same funct but returns the object
+        if(player.holding != None):
+            #should give us a string
+            #CHANGE
+            item = player.emptyHands() # i dont think hands emptied
+            #an error if workstation is null
+            #player gets what ever the workstation returns
+            player.holding = workstation.put(item) # put what I was holding at the workstation
+        else: 
+            print("You're not holding anything")
+    else:
+        print("Can't put down item, not next to workstation")
 
 # i think most manipulation is
 # done through the cooks
@@ -26,67 +71,35 @@ def run(kitchen, player1):
             player1.moveLeft()
         elif(command == "d"):
             player1.moveRight()
-        elif(command == "make_pizza"):
-            if(player1.nextTo("oven")):
-                player1.givePizza()
-            else:
-                print("Can't make pizza, not next to oven")
-        elif(command == "get_dough"):
-            if(player1.nextTo("doughStation")):
-                player1.give("dough")
-            else:
-                print("Can't get dough, not next to dough Station")
-        elif(command == "get_sauce"):
-            if(player1.nextTo("stove")):
-                player1.give("sauce")
-            else:
-                print("Can't get sauce, not next to stove")
-        elif(command == "get_cheese"):
-            if(player1.nextTo("fridge")):
-                player1.give("cheese")
-            else:
-                print("Can't get cheese, not next to fridge")
-        elif(command == "get_vegan_cheese"):
-            if(player1.nextTo("fridge")):
-                player1.give("vegan_cheese")
-            else:
-                print("Can't get cheese, not next to fridge")
-        elif(command == "get_anchovies"):
-            if(player1.nextTo("tank")):
-                player1.give("anchovies")
-            else:
-                print("Can't get anchovies, not next to fish Tank")
-        elif(command == "serve_pizza"):
-            if(player1.nextTo("counter")):
-                if(player1.pizzaCount == 0):
-                    print("Player 1 has no pizzas to serve")
-                else:
-                    player1.takePizza()
-            else:
-                print("Can't serve pizza, not next to counter")
+        elif(command.startswith("get_")):
+            get_(command.replace('get_', ''), player1)
+        #have another function that is just get, that sees if were
+        #next to somthing that we can get, and then if it gives 1 thing
+        # get it, otherwise, list the things that it holds
         elif(command == "put"): #trys to put whatever you hold down at the workstation
-            #this is a more complex command
-            if(player1.nextTo("workStation")):
-                workstation = player1.nextToObject("workStation") # this function is the same funct but returns the object
-                if(player1.holding != None):
-                    #should give us a string
-                    item = player1.emptyHands()
-                    print("Player 1 is holding " + item)
-                    if(workstation == None):
-                        print("ERROR workstation is null!!!")
-                    #workstation.holding = item # put what I was holding at the workstation
-                else: 
-                    print("You're not holding anything")
+            put(player1)
+        #inspect function to look at what is as a workstation
+        #take, to take something from a work bench
+            #next thing to write
+            #when you take somthing you will become the color of that thing
+            #you 
+        #command to give to the counter
+        elif(command == "trash"):
+            if(player1.nextTo("trashCan")):
+                player1.emptyHands()
             else:
-                print("Can't put down item, not next to workstation")
+                print("Nothing to throw out")
         elif(command == "q"):
             print("Pini's Pizza has bought Espressos")
             break
+        else:
+            print("Command \"" + command + "\" unknown: try \"-h\"")
         kitchen.print()
 
 def setUpKitchen(kitchen):
-    player1 = Cook(kitchen, 4, 3, "player1")
-    #add ovens
+    #have it ask for your name
+    player1 = Cook(kitchen, 4, 3, "Jackson")
+    # add ovens
     Oven(kitchen, 3, 0)
     Oven(kitchen, 4, 0)
 
@@ -96,15 +109,19 @@ def setUpKitchen(kitchen):
 
     Fridge(kitchen, 4, 7)
     Fridge(kitchen, 5, 7)
+
     DoughStation(kitchen, 6, 2)
     DoughStation(kitchen, 6, 3)
     DoughStation(kitchen, 6, 4)
+
     Stove(kitchen, 6, 5)
     Tank(kitchen, 0, 0)
     Tank(kitchen, 0, 1)
+
     ToppingCounter(kitchen, 0, 7)
     ToppingCounter(kitchen, 1, 7)
     ToppingCounter(kitchen, 2, 7)
+
     TrashCan(kitchen, 6, 0)
 
     WorkStation(kitchen, 3, 3)
@@ -130,26 +147,6 @@ def main():
 if __name__=="__main__":
     main()
 
-# adds for the week 3/13
-# Jackson
-# function that can take in a 
-#     row and col, and find a path
-#     to it if possible, then
-#     move to that path, otherwise
-#     say i cant go there
 
-# Dylan
-# nicer print function
-#    -maybe one that also takes an order list / queue?
-#    -could also take up more space
 
-# Patrick
-# -orders, will be its own thread
-# -make oven take a few seconds to make a pizza
-# -make pizza's more complicated to make
-
-# questions
-# functionaility first or add another player?
-
-#another thread will generate orders
 

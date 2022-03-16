@@ -42,6 +42,11 @@ class Kitchen:
         sqft.empty = False
         sqft.holding = obj
 
+    def at(self, row, col):
+        sqft = self.floor[row][col]
+        # change the values of the sqft
+        return sqft.holding
+
     # will remove anything
     def remove(self, row, col):
         self.floor[row][col].empty = True 
@@ -68,37 +73,37 @@ class Kitchen:
         elif(self.floor[row][col].holding.name() == item):
             return True
 
-    def isOven(self, row, col):
-        #print("checking if oven")
-        if(self.outOfBounds(row, col)):
-            #print("out of bounds")
-            return False
-        elif(self.floor[row][col].empty):
-            #print("twas empty")
-            return False
-        elif(self.floor[row][col].holding.name() == "oven"):
-            #print("found oven!")
-            return True
+    # def isOven(self, row, col):
+    #     #print("checking if oven")
+    #     if(self.outOfBounds(row, col)):
+    #         #print("out of bounds")
+    #         return False
+    #     elif(self.floor[row][col].empty):
+    #         #print("twas empty")
+    #         return False
+    #     elif(self.floor[row][col].holding.name() == "oven"):
+    #         #print("found oven!")
+    #         return True
 
-    def isCounter(self, row, col):
-        #print("checking if oven")
-        if(self.outOfBounds(row, col)):
-            #print("out of bounds")
-            return False
-        elif(self.floor[row][col].empty):
-            #print("twas empty")
-            return False
-        elif(self.floor[row][col].holding.name() == "counter"):
-            #print("found oven!")
-            return True
+    # def isCounter(self, row, col):
+    #     #print("checking if oven")
+    #     if(self.outOfBounds(row, col)):
+    #         #print("out of bounds")
+    #         return False
+    #     elif(self.floor[row][col].empty):
+    #         #print("twas empty")
+    #         return False
+    #     elif(self.floor[row][col].holding.name() == "counter"):
+    #         #print("found oven!")
+    #         return True
 
-    def nextToOven(self, playerName):
-        #first check of self.player1 is None
-        #print("in next to oven")
-        if(playerName != self.player1.name()):
-            #print(self.player1.name())
-            #print(playerName)
-            #print("player not on board")
-            return False #player is not on board
-        else:
-            return self.player1.nextToOven()
+    # def nextToOven(self, playerName):
+    #     #first check of self.player1 is None
+    #     #print("in next to oven")
+    #     if(playerName != self.player1.name()):
+    #         #print(self.player1.name())
+    #         #print(playerName)
+    #         #print("player not on board")
+    #         return False #player is not on board
+    #     else:
+    #         return self.player1.nextToOven()

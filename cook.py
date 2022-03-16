@@ -51,42 +51,17 @@ class Cook:
         return nextTo
 
     def nextToObject(self, item):
-        nextTo = False
-        item = None
-
-        nextTo = nextTo or self.kitchen.isA(item, self.row+1, self.col)
+  
         if(self.kitchen.isA(item, self.row+1, self.col)):
-            item = self.kitchen.floor[self.row+1][self.col].holding
-
-        nextTo = nextTo or self.kitchen.isA(item, self.row-1, self.col)
+            return self.kitchen.at(self.row+1, self.col)
         if(self.kitchen.isA(item, self.row-1, self.col)):
-            item = self.kitchen.floor[self.row-1][self.col].holding
-
-        nextTo = nextTo or self.kitchen.isA(item, self.row, self.col+1)
+            return self.kitchen.at(self.row-1, self.col)
         if(self.kitchen.isA(item, self.row, self.col+1)):
-            item = self.kitchen.floor[self.row][self.col+1].holding
-
-        nextTo = nextTo or self.kitchen.isA(item, self.row, self.col-1)
+            return self.kitchen.at(self.row, self.col+1)
         if(self.kitchen.isA(item, self.row, self.col-1)):
-            item = self.kitchen.floor[self.row][self.col-1].holding
+            return self.kitchen.at(self.row, self.col-1)
 
-        return item
-
-    # def nextToOven(self):
-    #     nextToOven = False
-    #     nextToOven = nextToOven or self.kitchen.isOven(self.row+1, self.col)
-    #     nextToOven = nextToOven or self.kitchen.isOven(self.row-1, self.col)
-    #     nextToOven = nextToOven or self.kitchen.isOven(self.row, self.col+1)
-    #     nextToOven = nextToOven or self.kitchen.isOven(self.row, self.col-1)
-    #     return nextToOven
-
-    # def nextToCounter(self):
-    #     nextTo = False
-    #     nextTo = nextTo or self.kitchen.isCounter(self.row+1, self.col)
-    #     nextTo = nextTo or self.kitchen.isCounter(self.row-1, self.col)
-    #     nextTo = nextTo or self.kitchen.isCounter(self.row, self.col+1)
-    #     nextTo = nextTo or self.kitchen.isCounter(self.row, self.col-1)
-    #     return nextTo
+        return None
 
     #cook is gunna move around in the kitchen
     def moveDown(self):

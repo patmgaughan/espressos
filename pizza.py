@@ -10,20 +10,31 @@ class Pizza:
 
     # starts as just a dought
     def __init__(self, sauced = False, cheese = None, \
-                       baked = False, toppings = {}):
+                       baked = False, toppings = set()):
         self.toppings = toppings #set
         self.baked = baked #bool
         self.sauced = sauced #bool
         self.cheese = cheese #string
 
+    #works!
+    def isDough(self):
+        return (self.sauced == False) and \
+               (self.cheese == None) and \
+               (self.toppings == set())
+
     #I'll fix
     def toString(self):
-        #fix
-        return str(self.toppings)
+        #fi
+        if(self.isDough()):
+            return "pizza dough"
+        else:
+            return "pizza"
 
     def name(self):
         return "Pizza"
 
+    # takes in the topping as a string
+    # an error if the topping is not a possible topping
     def addTopping(self, topping):
         None
         #see if it exists in topping

@@ -5,7 +5,8 @@ class DoughStation:
         self.kitchen = kitchen
         self.row = row
         self.col = col
-        self.kitchen.put(self, row, col)
+        if(kitchen != None):
+            self.kitchen.put(self, row, col)
 
     def toString(self):
         return "\033[95m=\033[00m"
