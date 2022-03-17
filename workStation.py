@@ -5,13 +5,7 @@ from pizza import Pizza
 
 class WorkStation:
 
-    #name = "workStation"
-
-    def __init__(self, kitchen, row, col):
-        self.kitchen = kitchen
-        self.row = row
-        self.col = col
-        self.kitchen.put(self, row, col)
+    def __init__(self):
         self.holding = None
 
     #holding is always a pizza

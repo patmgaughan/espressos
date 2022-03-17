@@ -25,7 +25,7 @@ class Cook:
         self.kitchen.player1 = self
         self.row = row
         self.fname = fname
-        self.pizzaCount = 0 #this will change
+        self.pizzaCount = 0 #this will change #no longer used
         self.holding = None
 
     def toString(self):

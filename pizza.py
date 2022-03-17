@@ -16,6 +16,15 @@ class Pizza:
         self.sauced = sauced #bool
         self.cheese = cheese #string
 
+    def __eq__(self, obj):
+        if(not isinstance(obj, Pizza)):
+            return False
+
+        return (self.toppings == obj.toppings)    and \
+               (self.baked == obj.baked)          and \
+               (self.sauced == obj.sauced)        and \
+               (self.cheese == obj.cheese)
+
     #works!
     def isDough(self):
         return (self.sauced == False) and \
@@ -60,3 +69,20 @@ class Pizza:
         else:
             self.toppings.add(topping)
             return None
+
+def test_answer():
+    pizza1 = Pizza(sauced=True, baked=False, \
+                   cheese="vegan_cheese", \
+                   toppings={"green_peppers", "olives"})
+
+    pizza2 = Pizza(sauced=True, baked=False, \
+                   cheese="vegan_cheese", \
+                   toppings={"olives", "green_peppers"})
+
+    assert pizza1 == pizza2
+
+    pizza3 = Pizza(sauced=True, baked=False, \
+                   cheese="cheese", \
+                   toppings={"olives", "green_peppers"})
+
+    assert pizza1 != pizza3

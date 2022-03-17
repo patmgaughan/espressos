@@ -1,12 +1,8 @@
 #applience
 class Counter:
 
-    def __init__(self, kitchen, row, col):
-        self.kitchen = kitchen
-        self.row = row
-        self.col = col
-        self.kitchen.put(self, row, col)
-        self.holding = None #will hold an object
+    def __init__(self):
+        self.holding = None #i actually dont think it will hold an object...
 
     def toString(self):
         return "\033[95m-\033[00m"

@@ -1,4 +1,18 @@
 from operator import truediv
+#from cook import Cook
+from oven import Oven
+from counter import Counter
+# from fridge import Fridge
+#from doughStation import DoughStation
+# from stove import Stove
+# from tank import Tank
+# from toppingCounter import ToppingCounter
+#from trashCan import TrashCan
+from limitLessAppliance import TrashCan, DoughStation, ToppingCounter, \
+                               Stove, Fridge, Tank
+from workStation import WorkStation
+import sys
+from pizza import Pizza
 
 #make a monitor
 
@@ -13,7 +27,7 @@ class SquareFoot:
         if(self.empty):
             return "\033[30m \033[00m"
         else:
-            return self.holding.toString()
+            return self.holding.toString() #change this to __str__
 
 # this should be a singleton
 # i.e. there should only ever be one kitchen
@@ -73,37 +87,63 @@ class Kitchen:
         elif(self.floor[row][col].holding.name() == item):
             return True
 
-    # def isOven(self, row, col):
-    #     #print("checking if oven")
-    #     if(self.outOfBounds(row, col)):
-    #         #print("out of bounds")
-    #         return False
-    #     elif(self.floor[row][col].empty):
-    #         #print("twas empty")
-    #         return False
-    #     elif(self.floor[row][col].holding.name() == "oven"):
-    #         #print("found oven!")
-    #         return True
+    def setUp(self):
 
-    # def isCounter(self, row, col):
-    #     #print("checking if oven")
-    #     if(self.outOfBounds(row, col)):
-    #         #print("out of bounds")
-    #         return False
-    #     elif(self.floor[row][col].empty):
-    #         #print("twas empty")
-    #         return False
-    #     elif(self.floor[row][col].holding.name() == "counter"):
-    #         #print("found oven!")
-    #         return True
+        self.put(Oven(), 3, 0)
+        self.put(Oven(), 4, 0)
 
-    # def nextToOven(self, playerName):
-    #     #first check of self.player1 is None
-    #     #print("in next to oven")
-    #     if(playerName != self.player1.name()):
-    #         #print(self.player1.name())
-    #         #print(playerName)
-    #         #print("player not on board")
-    #         return False #player is not on board
-    #     else:
-    #         return self.player1.nextToOven()
+        self.put(Counter(), 0, 2)
+        self.put(Counter(), 0, 3)
+        self.put(Counter(), 0, 4)
+
+        self.put(Fridge(), 4, 7)
+        self.put(Fridge(), 5, 7)
+
+        self.put(DoughStation(), 6, 2)
+        self.put(DoughStation(), 6, 3)
+        self.put(DoughStation(), 6, 4)
+
+        self.put(Stove(), 6, 5)
+
+        #tanks
+        self.put(Tank(), 0, 0)
+        tank2 = Tank()
+        tank2.setShape("Q")
+        self.put(tank2, 0, 1)
+
+        self.put(ToppingCounter(), 0, 7)
+        self.put(ToppingCounter(), 1, 7)
+        self.put(ToppingCounter(), 2, 7)
+
+        self.put(TrashCan(), 6, 0)
+
+        self.put(WorkStation(), 3, 3)
+        self.put(WorkStation(), 3, 4)
+        self.put(WorkStation(), 3, 5)
+        self.put(WorkStation(), 3, 6)
+        self.put(WorkStation(), 3, 7)
+
+        # Fridge(self, 4, 7)
+        # Fridge(self, 5, 7)
+
+        # DoughStation(self, 6, 2)
+        # DoughStation(self, 6, 3)
+        # DoughStation(self, 6, 4)
+
+        # Stove(self, 6, 5)
+        # Tank(self, 0, 0)
+        # Tank(self, 0, 1)
+
+        # ToppingCounter(self, 0, 7)
+        # ToppingCounter(self, 1, 7)
+        # ToppingCounter(self, 2, 7)
+
+        # TrashCan(self, 6, 0)
+
+        # WorkStation(self, 3, 3)
+        # WorkStation(self, 3, 4)
+        # WorkStation(self, 3, 5)
+        # WorkStation(self, 3, 6)
+        # WorkStation(self, 3, 7)
+
+        #return player1
