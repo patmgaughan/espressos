@@ -1,6 +1,8 @@
 #applience
 from pizza import Pizza
 
+#everything that just gives 
+
 class WorkStation:
 
     #name = "workStation"
@@ -14,27 +16,28 @@ class WorkStation:
 
     #holding is always a pizza
     def toString(self):
+
+        shape = "#"
+
         if(self.holding == None):
-            return "\033[93m#\033[00m"
-        elif(self.holding.toString() == "pizza dough"):
-            #search up what the color with via
-            #pizza last ingreduent
-            #then search that up in the pantry
-            #then search up that color
-            #in the applience and its color
-            return "\033[95m#\033[00m"
-        elif(self.holding.toString() == "cheesy pizza"):
-            #search up what the color with via
-            #pizza last ingreduent
-            #then search that up in the pantry
-            #then search up that color
-            #in the applience and its color
-            return "\033[34m#\033[00m"
-        elif(self.holding.toString() == "sauced pizza"):
-            return "\033[91m#\033[00m"
+            return "\033[93m" + shape + "\033[00m"
+
+        pizzaName = self.holding.toString()
+        if(not pizzaName.startswith("raw")):
+            shape = "0"
+
+        pizzaName = pizzaName.replace("raw ", "")
+
+        if(pizzaName == "pizza dough"):
+ 
+            return "\033[95m" + shape + "\033[00m"
+        elif(pizzaName == "cheesy pizza"):
+
+            return "\033[34m" + shape + "\033[00m"
+        elif(pizzaName == "sauced pizza"):
+            return "\033[91m" + shape + "\033[00m"
         else:
-            return "\033[92m#\033[00m"
-            #return "\u001b[46m#\033[00m"
+            return "\033[92m" + shape + "\033[00m"
 
     #item must be dough or a pizza
     #return what the player was holding or None

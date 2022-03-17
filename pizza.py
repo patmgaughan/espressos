@@ -5,7 +5,7 @@ class Pizza:
     # Sorry Dylan!
 
     possibleToppings = {"ham", "peperoni", "anchovies", \
-                        "green peppers", "olives", "onions", \
+                        "green_peppers", "olives", "onions", \
                         "pineapple"} #set
 
     # starts as just a dought
@@ -24,14 +24,17 @@ class Pizza:
 
     #I'll fix
     def toString(self):
-        #fi
+
         output = ""
+        if(self.baked == False):
+            output += "raw "
+        
         if(self.isDough()):
-            output = "pizza dough"
+            output += "pizza dough"
         elif(self.cheese != None):
-            output = "cheesy pizza"
+            output += "cheesy pizza"
         else:
-            output = "sauced pizza"
+            output += "sauced pizza"
 
         if(self.toppings != set()):
             output += (" " + str(self.toppings))
@@ -57,22 +60,3 @@ class Pizza:
         else:
             self.toppings.add(topping)
             return None
-
-
-        #if sauce
-            #make sure toppings and cheese empty -> else ruined
-
-        #if cheese
-            #make sure toppings empty -> else ruined
-
-        #if it already has that topping
-            #make ruined
-
-        #add topping
-        #self.toppings.add(topping)
-
-    #can't add sauce
-
-    #can't add cheese if it has "ham", \
-                        #"peperoni", "green peppers", "anchovis", \
-                        #"olives", "pineapple"

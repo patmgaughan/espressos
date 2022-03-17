@@ -11,6 +11,7 @@ from trashCan import TrashCan
 from workStation import WorkStation
 import sys
 from pizza import Pizza
+import time
 # make an appliacne thing that holds all the applinces
 
 
@@ -23,7 +24,7 @@ pantry = {
     "cheese":"fridge",
     "vegan_cheese":"fridge",
     "anchovies":"tank",
-    "ham":"toppingsCounter",
+    "ham":"toppingCounter",
     "pepperoni":"toppingCounter",
     "olives":"toppingCounter",
     "onions":"toppingCounter",
@@ -59,6 +60,19 @@ def put(player):
     else:
         print("Can't put down item, not next to workstation")
 
+
+def take(player):
+    if(player.nextTo("workStation")):
+        workstation = player.nextToObject("workStation")
+        item = workstation.holding
+        if(item != None):
+            player.give(workstation.holding)
+            workstation.holding = None
+        else:
+            print("Error workstation empty")
+    else:
+        print("Error not next to workstation")
+
 # i think most manipulation is
 # done through the cooks
 def run(kitchen, player1):
@@ -74,11 +88,10 @@ def run(kitchen, player1):
             player1.moveLeft()
         elif(command == "d"):
             player1.moveRight()
+        elif(command == "get"):
+            player1.commandGet()
         elif(command.startswith("get_")):
             get_(command.replace('get_', ''), player1)
-        #have another function that is just get, that sees if were
-        #next to somthing that we can get, and then if it gives 1 thing
-        # get it, otherwise, list the things that it holds
         elif(command == "put"): #trys to put whatever you hold down at the workstation
             put(player1)
         #inspect function to look at what is as a workstation
@@ -87,22 +100,51 @@ def run(kitchen, player1):
             #when you take somthing you will become the color of that thing
             #you 
         elif(command == "take"):
-            if(player1.nextTo("workStation")):
-                workstation = player1.nextToObject("workStation")
-                item = workstation.holding
-                if(item != None):
-                    player1.give(workstation.holding)
-                    workstation.holding = None
-                else:
-                    print("Error workstation empty")
-            else:
-                print("Error not next to workstation")
+            take(player1)
+            # if(player1.nextTo("workStation")):
+            #     workstation = player1.nextToObject("workStation")
+            #     item = workstation.holding
+            #     if(item != None):
+            #         player1.give(workstation.holding)
+            #         workstation.holding = None
+            #     else:
+            #         print("Error workstation empty")
+            # else:
+            #     print("Error not next to workstation")
         #command to give to the counter
         elif(command == "trash"):
             if(player1.nextTo("trashCan")):
                 player1.emptyHands()
             else:
                 print("Nothing to throw out")
+        elif(command == "bake"):
+            if(player1.nextTo("oven")):
+                pizza = player1.emptyHands()
+                if(not isinstance(pizza, Pizza)):
+                    print("Sorry, can only bake Pizza in oven")
+                    player1.give(pizza)
+                elif(pizza.baked == True):
+                    print("Pizza already baked!")
+                else:
+                    pizza.baked = True
+                    print("Baking Pizza")
+                    kitchen.print()
+                    time.sleep(1)
+                    print("Pizza baked!")
+                    player1.give(pizza)
+        elif(command == "serve"):
+            if(player1.nextTo("counter")):
+                if(isinstance(player1.holding, Pizza)):
+                    pizza = player1.emptyHands()
+                    if(pizza.baked == True):
+                        print("Pizza has been served")
+                    else:
+                        print("Must bake pizza before you serve it!")
+                        player1.give(pizza)
+                else:
+                    print("Must hold a pizza to serve")
+            else:
+                print("must be next to counter to serve")
         elif(command == "q"):
             print("Pini's Pizza has bought Espressos")
             break
@@ -112,7 +154,7 @@ def run(kitchen, player1):
 
 def setUpKitchen(kitchen):
     #have it ask for your name
-    player1 = Cook(kitchen, 4, 3, "Dylan")
+    player1 = Cook(kitchen, 4, 3, "Sean")
     # add ovens
     Oven(kitchen, 3, 0)
     Oven(kitchen, 4, 0)

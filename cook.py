@@ -2,6 +2,18 @@ from tokenize import cookie_re
 from kitchen import Kitchen
 from pizza import Pizza
 
+pantry = {
+    "dough":"doughStation", 
+    "sauce":"stove",
+    "cheese":"fridge",
+    "vegan_cheese":"fridge",
+    "anchovies":"tank",
+    "ham":"toppingCounter",
+    "pepperoni":"toppingCounter",
+    "olives":"toppingCounter",
+    "onions":"toppingCounter",
+    "green_peppers":"toppingCounter"
+}
 
 class Cook:
     def __init__(self, kitchen, row, col, fname):
@@ -44,6 +56,21 @@ class Cook:
             return self.name() + " holds " + self.holding.toString()
         return self.name() + " holds " + str(self.holding)
 
+    def commandGet(self):
+        thingsToGet = []
+        #lets see if we can get anything!
+        appliances = self.nextToAnyObject()
+        for appliance in appliances:
+            for ingredient in pantry:
+                if(pantry[ingredient] == appliance.name()):
+                    thingsToGet.append(ingredient)
+        if(len(thingsToGet) == 0):
+            print("Sorry, must be next to an appliance to get things")
+        elif(len(thingsToGet) == 1):
+            self.give(thingsToGet[0])
+        else:
+            print("Possible things to get: " + str(thingsToGet))
+
     #these next 2 functions will be made into 1 function
     def nextTo(self, item):
         nextTo = False
@@ -65,6 +92,23 @@ class Cook:
             return self.kitchen.at(self.row, self.col-1)
 
         return None
+
+    #return None if not next to anything
+    #otherwise return the first object that you are next to
+    def nextToAnyObject(self):
+
+        objects = []
+
+        if(not self.kitchen.isEmpty(self.row+1, self.col)):
+            objects.append(self.kitchen.at(self.row+1, self.col))
+        if(not self.kitchen.isEmpty(self.row-1, self.col)):
+            objects.append(self.kitchen.at(self.row-1, self.col))
+        if(not self.kitchen.isEmpty(self.row, self.col+1)):
+            objects.append(self.kitchen.at(self.row, self.col+1))
+        if(not self.kitchen.isEmpty(self.row, self.col-1)):
+            objects.append(self.kitchen.at(self.row, self.col-1))
+
+        return objects
 
     #cook is gunna move around in the kitchen
     def moveDown(self):
