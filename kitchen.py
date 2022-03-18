@@ -1,23 +1,5 @@
-from operator import truediv
-#from cook import Cook
-from oven import Oven
-from counter import Counter
-# from fridge import Fridge
-#from doughStation import DoughStation
-# from stove import Stove
-# from tank import Tank
-# from toppingCounter import ToppingCounter
-#from trashCan import TrashCan
-from limitLessAppliance import TrashCan, DoughStation, ToppingCounter, \
-                               Stove, Fridge, Tank
-from workStation import WorkStation
-import sys
-from pizza import Pizza
+from appliance import *
 
-#make a monitor
-
-# this is just a container that
-# holds a cook or an applience
 class SquareFoot:
     def __init__(self):
         self.empty = True
@@ -26,11 +8,9 @@ class SquareFoot:
     def __str__(self):
         if(self.empty):
             return "\033[30m \033[00m"
-        else:
-            return self.holding.toString() #change this to __str__
+        else: #will always hold an appliance
+            return self.holding.__str__()
 
-# this should be a singleton
-# i.e. there should only ever be one kitchen
 class Kitchen:
     WIDTH  = 8
     HEIGHT = 7
@@ -87,6 +67,14 @@ class Kitchen:
         elif(self.floor[row][col].holding.name() == item):
             return True
 
+    def isClass(self, clazz, row, col):
+        if(self.outOfBounds(row, col)):
+            return False
+        elif(self.floor[row][col].empty):
+            return False
+        elif(isinstance(self.floor[row][col].holding, clazz)):
+            return True
+
     def setUp(self):
 
         self.put(Oven(), 3, 0)
@@ -122,28 +110,3 @@ class Kitchen:
         self.put(WorkStation(), 3, 5)
         self.put(WorkStation(), 3, 6)
         self.put(WorkStation(), 3, 7)
-
-        # Fridge(self, 4, 7)
-        # Fridge(self, 5, 7)
-
-        # DoughStation(self, 6, 2)
-        # DoughStation(self, 6, 3)
-        # DoughStation(self, 6, 4)
-
-        # Stove(self, 6, 5)
-        # Tank(self, 0, 0)
-        # Tank(self, 0, 1)
-
-        # ToppingCounter(self, 0, 7)
-        # ToppingCounter(self, 1, 7)
-        # ToppingCounter(self, 2, 7)
-
-        # TrashCan(self, 6, 0)
-
-        # WorkStation(self, 3, 3)
-        # WorkStation(self, 3, 4)
-        # WorkStation(self, 3, 5)
-        # WorkStation(self, 3, 6)
-        # WorkStation(self, 3, 7)
-
-        #return player1
