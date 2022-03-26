@@ -58,7 +58,7 @@ class WorkStation(Appliance):
             print("Error cannot put this on workstaton")
             return item
 
-        #change this later to be a part of addTopping()
+        # change this later to be a part of addTopping()
         if(item == "dough"):
             #workstation must be null
             #pizza is created at workstation
@@ -80,12 +80,6 @@ class WorkStation(Appliance):
         else:
             item = pizza.addTopping(item)
 
-            #make sure the pizza doesn't already have this topping
-        #item is now a pizza
-        #self.holding = item
-
-        #say what we hold
-        #only prints if we are holding something which is a pizza
         print("Workstation holds " + self.pizza.toString())
         return item #always return what you had, maybe this is changed to null
 
@@ -113,9 +107,6 @@ class Oven(Appliance):
 
     def name(self):
         return "oven"
-
-    #later this will maybe keep track of something?
-
 
 #just to help classify objects
 class limitLessAppliance(Appliance):

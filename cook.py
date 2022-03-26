@@ -69,7 +69,6 @@ class Cook:
     def commandPut(self):
     #this is a more complex command
         if(self.nextTo(WorkStation)):
-        # if(self.nextTo("workStation")):
             workstation = self.nextToObject("workStation") # this function is the same funct but returns the object
             if(self.holding != None):
                 #should give us a string
@@ -86,7 +85,6 @@ class Cook:
 
     def commandTake(self):
         if(self.nextTo(WorkStation)):
-        #if(self.nextTo("workStation")):
             workstation = self.nextToObject("workStation")
             item = workstation.myPizza()
             if(item != None):
@@ -99,7 +97,6 @@ class Cook:
 
     def commandBake(self):
         if(self.nextTo(Oven)):
-        #if(self.nextTo("oven")):
             pizza = self.emptyHands()
             if(not isinstance(pizza, Pizza)):
                 print("Sorry, can only bake Pizza in oven")
@@ -120,14 +117,12 @@ class Cook:
 
     def commandTrash(self):
         if(self.nextTo(TrashCan)):
-        #if(self.nextTo("trashCan")):
             self.emptyHands()
         else:
             print("Nothing to throw out")
 
     def commandServe(self):
         if(self.nextTo(Counter)):
-        #if(self.nextTo("counter")):
             if(isinstance(self.holding, Pizza)):
                 pizza = self.emptyHands()
                 if(pizza.baked == True):
