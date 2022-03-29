@@ -1,19 +1,10 @@
 from tokenize import cookie_re
 from kitchen import Kitchen
 from pizza import Pizza
-
-pantry = {
-    "dough":"doughStation", 
-    "sauce":"stove",
-    "cheese":"fridge",
-    "vegan_cheese":"fridge",
-    "anchovies":"tank",
-    "ham":"toppingCounter",
-    "pepperoni":"toppingCounter",
-    "olives":"toppingCounter",
-    "onions":"toppingCounter",
-    "green_peppers":"toppingCounter"
-}
+from color import Color
+from pantry import Pantry
+from appliance import *
+import time
 
 class Cook:
     def __init__(self, kitchen, row, col, fname):
@@ -21,21 +12,17 @@ class Cook:
         self.kitchen = kitchen
         self.row = row
         self.col = col
-        self.kitchen.put(self, row, col)
+        self.kitchen.put(self, row, col) #puts self into kitchen
         self.kitchen.player1 = self
         self.row = row
         self.fname = fname
-        self.pizzaCount = 0 #this will change #no longer used
         self.holding = None
 
-    def toString(self):
-        return "\033[99m*\033[00m"
+    def __str__(self):
+        return Color.chef + "*" + "\033[00m"
 
     def name(self):
         return self.fname
-
-    def givePizza(self):
-        self.pizzaCount += 1
 
     def emptyHands(self):
         item = self.holding
@@ -47,22 +34,30 @@ class Cook:
             self.holding = item
         else:
             print("My Hands are full!")
-
-    def takePizza(self):
-        self.pizzaCount -= 1
     
     def inventory(self):
         if(isinstance(self.holding, Pizza)):
             return self.name() + " holds " + self.holding.toString()
         return self.name() + " holds " + str(self.holding)
 
+    def get_(self, ingredient):
+        if(not (ingredient in Pantry.pantry)):
+            print("Ingredient \"" + ingredient + "\" unknown: try \"-h\"")
+            return
+        if(self.nextTo(Pantry.pantry[ingredient])):
+            self.give(ingredient)
+        else:
+            print("Can't get " + str(ingredient) + ", not standing next to " + \
+                   str(Pantry.pantry[ingredient]))
+
+    #this can now make use of limitLessApplinces
     def commandGet(self):
         thingsToGet = []
         #lets see if we can get anything!
         appliances = self.nextToAnyObject()
         for appliance in appliances:
-            for ingredient in pantry:
-                if(pantry[ingredient] == appliance.name()):
+            for ingredient in Pantry.pantry:
+                if(isinstance(appliance, Pantry.pantry[ingredient])):
                     thingsToGet.append(ingredient)
         if(len(thingsToGet) == 0):
             print("Sorry, must be next to an appliance to get things")
@@ -71,13 +66,83 @@ class Cook:
         else:
             print("Possible things to get: " + str(thingsToGet))
 
-    #these next 2 functions will be made into 1 function
-    def nextTo(self, item):
+    def commandPut(self):
+    #this is a more complex command
+        if(self.nextTo(WorkStation)):
+            workstation = self.nextToObject("workStation") # this function is the same funct but returns the object
+            if(self.holding != None):
+                #should give us a string
+                #CHANGE
+                item = self.emptyHands() # i dont think hands emptied
+                #an error if workstation is null
+                #player gets what ever the workstation returns
+                self.holding = workstation.put(item) # put what I was holding at the workstation
+            else: 
+                print("You're not holding anything")
+        else:
+            print("Can't put down item, not next to workstation")
+
+
+    def commandTake(self):
+        if(self.nextTo(WorkStation)):
+            workstation = self.nextToObject("workStation")
+            item = workstation.myPizza()
+            if(item != None):
+                self.give(workstation.myPizza())
+                workstation.setPizza(None)
+            else:
+                print("Error workstation empty")
+        else:
+            print("Error not next to workstation")
+
+    def commandBake(self):
+        if(self.nextTo(Oven)):
+            pizza = self.emptyHands()
+            if(not isinstance(pizza, Pizza)):
+                print("Sorry, can only bake Pizza in oven")
+                self.give(pizza)
+            elif(pizza.baked == True):
+                print("Pizza already baked!")
+                self.give(pizza)
+            else:
+                pizza.baked = True
+                print("Baking Pizza")
+                oven = self.nextToObject("oven")
+                oven.setColor(Color.stove)
+                self.kitchen.print() #this def wont be null
+                oven.setColor(Color.oven)
+                time.sleep(1)
+                print("Pizza baked!")
+                self.give(pizza)
+
+    def commandTrash(self):
+        if(self.nextTo(TrashCan)):
+            self.emptyHands()
+        else:
+            print("Nothing to throw out")
+
+    def commandServe(self):
+        if(self.nextTo(Counter)):
+            if(isinstance(self.holding, Pizza)):
+                pizza = self.emptyHands()
+                if(pizza.baked == True):
+                    print("Pizza has been served")
+                else:
+                    print("Must bake pizza before you serve it!")
+                    self.give(pizza)
+            else:
+                print("Must hold a pizza to serve")
+        else:
+            print("must be next to counter to serve")
+
+
+    #these will all be simplified soon
+    def nextTo(self, clazz):
         nextTo = False
-        nextTo = nextTo or self.kitchen.isA(item, self.row+1, self.col)
-        nextTo = nextTo or self.kitchen.isA(item, self.row-1, self.col)
-        nextTo = nextTo or self.kitchen.isA(item, self.row, self.col+1)
-        nextTo = nextTo or self.kitchen.isA(item, self.row, self.col-1)
+        nextTo = nextTo or self.kitchen.isClass(clazz, self.row+1, self.col)
+        nextTo = nextTo or self.kitchen.isClass(clazz, self.row-1, self.col)
+        nextTo = nextTo or self.kitchen.isClass(clazz, self.row, self.col+1)
+        nextTo = nextTo or self.kitchen.isClass(clazz, self.row, self.col-1)
         return nextTo
 
     def nextToObject(self, item):
@@ -110,56 +175,26 @@ class Cook:
 
         return objects
 
-    #cook is gunna move around in the kitchen
-    def moveDown(self):
-        #if we cant move dont move
-        if(self.row + 1 >= Kitchen.HEIGHT):
+    def move(self, row, col):
+        if(self.kitchen.outOfBounds(row, col)):
+            return
+        if(not self.kitchen.isEmpty(row, col)):
             return
 
-        if(not self.kitchen.isEmpty(self.row+1, self.col)):
-            return
-        #change this to a kitchen move
-        # instead of 2 things
-        #change place in kitchen
         self.kitchen.remove(self.row, self.col) 
-        #maybe add self to make sure we remove self
-        self.row = self.row + 1 # bc of how we print
+        self.row = row
+        self.col = col
         self.kitchen.put(self, self.row, self.col)
-        #done moving kitchen
+
+    def moveDown(self):
+        self.move(self.row+1, self.col)
 
     def moveUp(self):
-        if(self.row - 1 < 0):
-            return
-
-        if(not self.kitchen.isEmpty(self.row-1, self.col)):
-            return
-
-        self.kitchen.remove(self.row, self.col)
-        self.row = self.row - 1
-        self.kitchen.put(self, self.row, self.col)
+        self.move(self.row-1, self.col)
 
     def moveRight(self):
-        if(self.col + 1 >= Kitchen.WIDTH):
-            return
-
-        if(not self.kitchen.isEmpty(self.row, self.col+1)):
-            return
-
-        self.kitchen.remove(self.row, self.col)
-        self.col = self.col + 1
-        self.kitchen.put(self, self.row, self.col)
+        self.move(self.row, self.col+1)
 
     def moveLeft(self):
-        if(self.col - 1 < 0):
-            return
+        self.move(self.row, self.col-1)
 
-        if(not self.kitchen.isEmpty(self.row, self.col-1)):
-            return
-
-        self.kitchen.remove(self.row, self.col)
-        self.col = self.col - 1
-        self.kitchen.put(self, self.row, self.col)
-
-    # if ur next to that obj, 
-    # used to validate commands
-    #def nextTo(class, )

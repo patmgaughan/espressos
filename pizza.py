@@ -1,8 +1,6 @@
-class Pizza:
+from color import Color
 
-    #I was thinking about the order of things, and it made
-    # most sense to seperate the sauce and cheese for ease
-    # Sorry Dylan!
+class Pizza:
 
     possibleToppings = {"ham", "peperoni", "anchovies", \
                         "green_peppers", "olives", "onions", \
@@ -12,9 +10,11 @@ class Pizza:
     def __init__(self, sauced = False, cheese = None, \
                        baked = False, toppings = set()):
         self.toppings = toppings #set
-        self.baked = baked #bool
-        self.sauced = sauced #bool
-        self.cheese = cheese #string
+        self.baked    = baked #bool
+        self.sauced   = sauced #bool
+        self.cheese   = cheese #string
+
+        self.lastTopping = None #used for anchovie printing
 
     def __eq__(self, obj):
         if(not isinstance(obj, Pizza)):
@@ -31,9 +31,29 @@ class Pizza:
                (self.cheese == None) and \
                (self.toppings == set())
 
-    #I'll fix
-    def toString(self):
+    #lets make this cleaner :)
+    def __str__(self):
+        shape = "#"
+        color = "\033[95m"
 
+        if(self.baked):
+            shape = "0"
+
+        if(self.isDough()):
+            color = Color.doughStation
+        elif(self.cheese != None and self.toppings == set()):
+            color = Color.cheese
+        elif(self.sauced == True and self.toppings == set()):
+            color = Color.stove
+        elif("anchovies" == self.lastTopping):
+            color = Color.tank
+        else:
+            color = Color.topped
+
+        return color + shape + "\033[00m"
+
+    # this can be much better
+    def toString(self):
         output = ""
         if(self.baked == False):
             output += "raw "
@@ -67,6 +87,7 @@ class Pizza:
             print("This topping has already been added to the Pizza")
             return topping
         else:
+            self.lastTopping = topping
             self.toppings.add(topping)
             return None
 
