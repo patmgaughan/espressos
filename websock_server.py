@@ -11,8 +11,6 @@ import counter
 
 
 kitch = kitchen.Kitchen()
-player1 = cook.Cook(kitch, 3, 3, "player1")
-player2 = cook.Cook(kitch, 4, 4, "player2")
 oven.Oven(kitch, 6, 6)
 oven.Oven(kitch, 6, 5)
 counter.Counter(kitch, 2, 0)
@@ -21,22 +19,28 @@ kitch.print()
 
 clients = []
 
+start_pos = 1
 
 async def hello(websocket):
     global kitch
     global clients
-    global player1
+    global start_pos
+    player = cook.Cook(kitch, start_pos, start_pos, "player")
+    start_pos += 1
+
     pprint(globals())
     clients.append(websocket)
+    for ws in clients:
+        await ws.send(str(kitch))
     print("clienst: ", clients)
     while True:
         resp = await websocket.recv()
-        meth, func_name = resp.split()
+        func_name = resp.strip()
         print(f"<<< {func_name}")
 
         # func = getattr(globals()["ops"], func_name)
 
-        func = getattr(globals()[meth], func_name)
+        func = getattr(player, func_name)
         func()
 
         kitch.print()
