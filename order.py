@@ -124,20 +124,15 @@ class Order:
 
 def main():
     # Keep in try/finally so we can raise an exception to end the thread
-    try:
-        start_time = time.time()
-        rate = Order.ORDER_RATE
-        decay_rate = Order.DECAY
-        while True:
+    start_time = time.time()
+    rate = Order.ORDER_RATE
+    decay_rate = Order.DECAY
+    while True:
                   
-            sleep(Order.ORDER_RATE) 
+        sleep(Order.ORDER_RATE) 
         
-            pizza = build_pizza(start_time) 
-            order = Order(pizza)
+        pizza = build_pizza(start_time) 
+        order = Order(pizza)
             
-            # send order to kitchen code here
-
-            rate *= rate * ORDER.DECAY
-    finally:
-        # close up connections and whatnot
-        sys.exit(0)
+    # send order to kitchen code here
+    rate *= rate * ORDER.DECAY
