@@ -20,7 +20,7 @@ class Kitchen:
     def __init__(self):
         self.floor = [[None for i in range(Kitchen.WIDTH)] \
                       for i in range(Kitchen.HEIGHT)]
-        self.player1 = None
+        self.player1 = None #remove reference to player
 
     def put(self, obj, row, col):
         self.floor[row][col] = obj
