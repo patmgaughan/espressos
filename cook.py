@@ -127,6 +127,7 @@ class Cook:
                 pizza = self.emptyHands()
                 if(pizza.baked == True):
                     print("Pizza has been served")
+                    #is there an order on the queue that matches the pizza we order
                 else:
                     print("Must bake pizza before you serve it!")
                     self.give(pizza)
