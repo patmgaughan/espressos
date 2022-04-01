@@ -1,15 +1,5 @@
 from appliance import *
 
-class SquareFoot:
-    def __init__(self):
-        self.empty = True
-        self.holding = None
-
-    def __str__(self):
-        if(self.empty):
-            return "\033[30m \033[00m"
-        else: #will always hold an appliance
-            return self.holding.__str__()
 
 class Kitchen:
     WIDTH  = 8
@@ -17,49 +7,32 @@ class Kitchen:
 
     def __str__(self):
         result = ""
-        # assumes player1 is not null currently
-        if (self.player1 != None):
-            result += self.player1.inventory() + "\n"
         for row in self.floor:
-            for sqft in row:
-                result += str(sqft) + " "
+            for obj in row:
+                if(obj == None):
+                    result += "  "
+                else:
+                    result += str(obj) + " "
             result += "\n"
-        result += "--------------\n"
+        result += "--------------"
         return result
 
-
     def __init__(self):
-        self.floor = [[SquareFoot()for i in range(Kitchen.WIDTH)] \
+        self.floor = [[None for i in range(Kitchen.WIDTH)] \
                       for i in range(Kitchen.HEIGHT)]
         self.player1 = None
 
-    def print(self):
-        #assumes player1 is not null currently
-        if(self.player1 != None):
-            print(self.player1.inventory())
-        for row in self.floor:
-            for sqft in row:
-                print(sqft,end = " ")
-            print()
-        print("--------------")
-
     def put(self, obj, row, col):
-        sqft = self.floor[row][col]
-        # change the values of the sqft
-        sqft.empty = False
-        sqft.holding = obj
+        self.floor[row][col] = obj
 
     def at(self, row, col):
-        sqft = self.floor[row][col]
-        # change the values of the sqft
-        return sqft.holding
+        return self.floor[row][col]
 
-    # will remove anything
     def remove(self, row, col):
-        self.floor[row][col].empty = True 
+        self.floor[row][col] = None
 
     def isEmpty(self, row, col):
-        return self.floor[row][col].empty
+        return self.floor[row][col] == None
 
     def outOfBounds(self, row, col):
         if(row >= Kitchen.HEIGHT):
@@ -75,17 +48,18 @@ class Kitchen:
     def isA(self, item, row, col):
         if(self.outOfBounds(row, col)):
             return False
-        elif(self.floor[row][col].empty):
+        elif(self.floor[row][col] == None):
             return False
-        elif(self.floor[row][col].holding.name() == item):
+        #its an appliance CHECK
+        elif(self.floor[row][col].name() == item):
             return True
 
     def isClass(self, clazz, row, col):
         if(self.outOfBounds(row, col)):
             return False
-        elif(self.floor[row][col].empty):
+        elif(self.floor[row][col] == None):
             return False
-        elif(isinstance(self.floor[row][col].holding, clazz)):
+        elif(isinstance(self.floor[row][col], clazz)):
             return True
 
     def setUp(self):
