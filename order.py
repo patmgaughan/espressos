@@ -19,7 +19,7 @@ class Order:
         Constants
     ''' 
 
-    ORDER_TIME = 30
+    ORDER_TIME = 5
     ORDER_RATE = 30
     DECAY = .75
 
@@ -43,14 +43,16 @@ class Order:
     '''
         Instance Methods
     '''
-
+    
+    def toString(self):
+        return self.pizza.toString()
     # expired()
     # Returns: True if order has expired
     def expired(self):
-        if (time.time() - self.timestamp > ORDER_TIME): 
-            return False
-        else:
+        if (time.time() - self.timestamp > Order.ORDER_TIME): 
             return True
+        else:
+            return False
         
     # fulfullOrder(pizza)
     # Returns: True if the given pizza is equal to the instance's pizza
