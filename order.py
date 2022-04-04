@@ -108,14 +108,11 @@ class Order:
         # Select topping amount based on how long the game has been going 
         # on for 
         if time.time() - start_time < Order.FIRST_ROUND:
-            print("time diff 1: {}".format(time.time() - start_time))
             toppings = Order.choose_toppings(2, False) 
     
         elif time.time() - start_time < Order.SECOND_ROUND:
-            print("time diff 2: {}".format(time.time() - start_time))
             toppings = Order.choose_toppings(3, False)
         else:
-            print("time diff 3: {}".format(time.time() - start_time))
             toppings = Order.choose_toppings(5, True)
 
         # Pizza(sauced_bool, cheese_str, baked_bool, toppings_set)    
