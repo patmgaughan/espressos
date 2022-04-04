@@ -19,9 +19,7 @@ class Order:
         Constants
     ''' 
 
-    ORDER_TIME = 30
-    ORDER_RATE = 30
-    DECAY = .75
+    ORDER_TIME = 45
 
     FIRST_ROUND = 180
     SECOND_ROUND = 480
@@ -43,14 +41,17 @@ class Order:
     '''
         Instance Methods
     '''
+    
+    def toString(self):
+        return self.pizza.toString()
 
     # expired()
     # Returns: True if order has expired
     def expired(self):
-        if (time.time() - self.timestamp > ORDER_TIME): 
-            return False
-        else:
+        if (time.time() - self.timestamp > Order.ORDER_TIME): 
             return True
+        else:
+            return False
         
     # fulfullOrder(pizza)
     # Returns: True if the given pizza is equal to the instance's pizza
@@ -122,17 +123,4 @@ class Order:
                     
     
 
-def main():
-    # Keep in try/finally so we can raise an exception to end the thread
-    start_time = time.time()
-    rate = Order.ORDER_RATE
-    decay_rate = Order.DECAY
-    while True:
-                  
-        sleep(Order.ORDER_RATE) 
-        
-        pizza = build_pizza(start_time) 
-        order = Order(pizza)
-            
-    # send order to kitchen code here
-    rate *= rate * ORDER.DECAY
+
