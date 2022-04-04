@@ -32,8 +32,9 @@ class Cook:
     def give(self, item):
         if(self.holding == None):
             self.holding = item
+            return True, ""
         else:
-            print("My Hands are full!")
+            return False, "My Hands are full!"
     
     def inventory(self):
         if(isinstance(self.holding, Pizza)):
@@ -42,13 +43,12 @@ class Cook:
 
     def get_(self, ingredient):
         if(not (ingredient in Pantry.pantry)):
-            print("Ingredient \"" + ingredient + "\" unknown: try \"-h\"")
-            return
-        if(self.nextTo(Pantry.pantry[ingredient])):
-            self.give(ingredient)
-        else:
-            print("Can't get " + str(ingredient) + ", not standing next to " + \
-                   str(Pantry.pantry[ingredient]))
+            return False, "Ingredient \"" + ingredient + "\" unknown: try \"-h\""
+        if(not self.nextTo(Pantry.pantry[ingredient])):
+            return False, "Can't get " + str(ingredient) + ", not standing next to " + \
+                   str(Pantry.pantry[ingredient])
+
+        return self.give(ingredient)
 
     #this can now make use of limitLessApplinces
     def commandGet(self):
@@ -60,81 +60,90 @@ class Cook:
                 if(isinstance(appliance, Pantry.pantry[ingredient])):
                     thingsToGet.append(ingredient)
         if(len(thingsToGet) == 0):
-            print("Sorry, must be next to an appliance to get things")
-        elif(len(thingsToGet) == 1):
-            self.give(thingsToGet[0])
-        else:
-            print("Possible things to get: " + str(thingsToGet))
+            return False, "Sorry, must be next to an appliance to get things"
+        elif(len(thingsToGet) > 1):
+            return False, "Possible things to get: " + str(thingsToGet)
+
+        return self.give(thingsToGet[0])
 
     def commandPut(self):
-    #this is a more complex command
-        if(self.nextTo(WorkStation)):
-            workstation = self.nextToObject("workStation") # this function is the same funct but returns the object
-            if(self.holding != None):
-                #should give us a string
-                #CHANGE
-                item = self.emptyHands() # i dont think hands emptied
-                #an error if workstation is null
-                #player gets what ever the workstation returns
-                self.holding = workstation.put(item) # put what I was holding at the workstation
-            else: 
-                print("You're not holding anything")
-        else:
-            print("Can't put down item, not next to workstation")
+        if(not self.nextTo(WorkStation)):
+            return False, "Can't put down item, not next to workstation"
+
+        workstation = self.nextToObject("workStation") # this function is the same funct but returns the object
+        if(self.holding == None):
+            return False, "You're not holding anything"
+
+
+        item = self.emptyHands() 
+        #player gets what ever the workstation returns
+        self.holding = workstation.put(item) # put what I was holding at the workstation
+        if(self.holding != None): 
+            return False, "Workstation is full"
+
+        return True, ""
 
 
     def commandTake(self):
-        if(self.nextTo(WorkStation)):
-            workstation = self.nextToObject("workStation")
-            item = workstation.myPizza()
-            if(item != None):
-                self.give(workstation.myPizza())
-                workstation.setPizza(None)
-            else:
-                print("Error workstation empty")
-        else:
-            print("Error not next to workstation")
+        if(not self.nextTo(WorkStation)):
+            return False, "Error not next to workstation"
+
+        workstation = self.nextToObject("workStation")
+        item = workstation.myPizza()
+
+        if(item == None):
+            return False, "Error workstation empty"
+
+        succ, msg = self.give(workstation.myPizza())
+        workstation.setPizza(None)
+        return succ, msg
+
 
     def commandBake(self):
-        if(self.nextTo(Oven)):
-            pizza = self.emptyHands()
-            if(not isinstance(pizza, Pizza)):
-                print("Sorry, can only bake Pizza in oven")
-                self.give(pizza)
-            elif(pizza.baked == True):
-                print("Pizza already baked!")
-                self.give(pizza)
-            else:
-                pizza.baked = True
-                print("Baking Pizza")
-                oven = self.nextToObject("oven")
-                oven.setColor(Color.stove)
-                self.kitchen.print() #this def wont be null
-                oven.setColor(Color.oven)
-                time.sleep(1)
-                print("Pizza baked!")
-                self.give(pizza)
+        if(not self.nextTo(Oven)):
+            return False, "Must be next to Oven to bake"
+
+        pizza = self.emptyHands()
+        if(not isinstance(pizza, Pizza)):
+            self.give(pizza)
+            return False, "Sorry, can only bake Pizza in oven"
+        elif(pizza.baked == True):
+            self.give(pizza)
+            return False, "Pizza already baked!"
+        
+        pizza.baked = True
+        print("Baking Pizza") #must fix
+        oven = self.nextToObject("oven")
+        oven.setColor(Color.stove)
+        self.kitchen.print() #must fix
+        oven.setColor(Color.oven)
+        time.sleep(1)
+                
+        self.give(pizza)
+        return True, "Pizza baked!"
 
     def commandTrash(self):
-        if(self.nextTo(TrashCan)):
-            self.emptyHands()
-        else:
-            print("Nothing to throw out")
+        if(not self.nextTo(TrashCan)):
+            return False, "Nothing to throw out"
+
+        self.emptyHands()
+        return True, ""
 
     def commandServe(self):
-        if(self.nextTo(Counter)):
-            if(isinstance(self.holding, Pizza)):
-                pizza = self.emptyHands()
-                if(pizza.baked == True):
-                    print("Pizza has been served")
-                else:
-                    print("Must bake pizza before you serve it!")
-                    self.give(pizza)
-            else:
-                print("Must hold a pizza to serve")
-        else:
-            print("must be next to counter to serve")
+        if(not self.nextTo(Counter)):
+            return False, "must be next to counter to serve"
 
+        if(not isinstance(self.holding, Pizza)):
+            return False, "Must hold a pizza to serve"
+
+        pizza = self.emptyHands()
+        if(pizza.baked != True):
+            self.give(pizza)
+            return False, "Must bake pizza before you serve it!"
+
+        return True, "Pizza has been served"
+        #is there an order on the queue that matches the pizza we order
+        
 
     #these will all be simplified soon
     def nextTo(self, clazz):
@@ -177,24 +186,26 @@ class Cook:
 
     def move(self, row, col):
         if(self.kitchen.outOfBounds(row, col)):
-            return
+            return False, ""
         if(not self.kitchen.isEmpty(row, col)):
-            return
+            return False, ""
 
         self.kitchen.remove(self.row, self.col) 
         self.row = row
         self.col = col
         self.kitchen.put(self, self.row, self.col)
 
+        return True, ""
+
     def moveDown(self):
-        self.move(self.row+1, self.col)
+        return self.move(self.row+1, self.col)
 
     def moveUp(self):
-        self.move(self.row-1, self.col)
+        return self.move(self.row-1, self.col)
 
     def moveRight(self):
-        self.move(self.row, self.col+1)
+        return self.move(self.row, self.col+1)
 
     def moveLeft(self):
-        self.move(self.row, self.col-1)
+        return self.move(self.row, self.col-1)
 
