@@ -7,7 +7,7 @@ from appliance import *
 import time
 
 class Cook:
-    def __init__(self, kitchen, row, col, fname):
+    def __init__(self, kitchen, row, col, fname, orderList=None):
         #maybe some locking is needed later idk
         self.kitchen = kitchen
         self.row = row
@@ -17,6 +17,7 @@ class Cook:
         self.row = row
         self.fname = fname
         self.holding = None
+        self.orderList = orderList
 
     def __str__(self):
         return Color.chef + "*" + "\033[00m"
@@ -140,8 +141,8 @@ class Cook:
         if(pizza.baked != True):
             self.give(pizza)
             return False, "Must bake pizza before you serve it!"
-
-        return True, "Pizza has been served"
+        
+        return self.orderList.fulfillOrder(pizza)
         #is there an order on the queue that matches the pizza we order
         
 
