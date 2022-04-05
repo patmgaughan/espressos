@@ -115,7 +115,7 @@ class Cook:
         print("Baking Pizza") #must fix
         oven = self.nextToObject("oven")
         oven.setColor(Color.stove)
-        self.kitchen.print() #must fix
+        print(self.kitchen) #must fix
         oven.setColor(Color.oven)
         time.sleep(1)
                 

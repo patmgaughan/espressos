@@ -1,5 +1,9 @@
+import threading
+
 from kitchen import Kitchen
 from cook import Cook
+from order_list import OrderList
+from order_generator import order_generator
 
 commands = {"w":"moveUp", "s":"moveDown", "a":"moveLeft", "d":"moveRight",\
             "get":"commandGet", "put":"commandPut", "take":"commandTake", \
@@ -8,7 +12,9 @@ commands = {"w":"moveUp", "s":"moveDown", "a":"moveLeft", "d":"moveRight",\
 
 # i think most manipulation is
 # done through the cooks
-def run(kitchen, player1):
+def run(kitchen, player1, order_list):
+    order_thread = threading.Thread(target=order_generator, args=("hard", order_list,))
+    order_thread.start()
     while True:
         succ = False
         msg = ""
@@ -42,16 +48,18 @@ def run(kitchen, player1):
             print(msg)
         print(player1.inventory())
         print(kitchen)
+        print(order_list.toString())
 
 def main():
     kitchen = Kitchen()
     kitchen.setUp() #can have different setUps
     player1 = Cook(kitchen, 4, 3, "Jackson")
+    order_list = OrderList()
     #start game
     print("Welcome to Espresso's")
     print(kitchen)
     #run game
-    run(kitchen, player1)
+    run(kitchen, player1, order_list)
 
 if __name__=="__main__":
     main()
