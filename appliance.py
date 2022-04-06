@@ -44,17 +44,18 @@ class WorkStation(Appliance):
     #item must be dough or a pizza
     #return what the player was holding or None
     def put(self, item):
+        print("Workstation is about to put")
         #if the item isn't dough AND we dont hold a pizza
-        pizza = self.pizza
+        #pizza = self.pizza
 
         #if item is pizza and counter empty
-        if((isinstance(item, Pizza)) and (pizza == None)):
+        if((isinstance(item, Pizza)) and (self.pizza == None)):
             self.pizza = item
             print("Workstation holds " + self.pizza.toString())
             return None
 
         #make sure workstation has a pizza or were adding dough
-        if((item != "dough") and (pizza == None)):
+        if((item != "dough") and (self.pizza == None)):
             print("Error cannot put this on workstaton")
             return item
 
@@ -62,23 +63,30 @@ class WorkStation(Appliance):
         if(item == "dough"):
             #workstation must be null
             #pizza is created at workstation
-            if(pizza == None):
+            if(self.pizza == None):
                 self.pizza = Pizza() #which is just dough
                 item = None
         elif(item == "sauce"):
-            if(pizza.cheese != None):
+            if(self.pizza.cheese != None):
                 print("cannot add sauce, this pizza already has cheese")
                 return item
-            pizza.sauced = True
+            self.pizza.sauced = True
             item = None
         elif(item == "cheese" or item == "vegan_cheese"):  
-            if(pizza.cheese != None):
+            if(self.pizza.cheese != None):
                 print("Pizza already has cheese, and Espressos is not made of cheese")
                 return item
-            pizza.cheese = item
+            self.pizza.cheese = item
             item = None
         else:
-            item = pizza.addTopping(item)
+            #returns the item if it can not be added, None otherwise
+            #item = self.pizza.addTopping(item) #it didn't work when i pasted in 
+            # this code
+            #try 1, still doesnt work
+            self.pizza.toppings.add(item)
+            item = None
+            #end try 1
+            #pizza.toppings = {item}, this works thou??
 
         print("Workstation holds " + self.pizza.toString())
         return item #always return what you had, maybe this is changed to null
