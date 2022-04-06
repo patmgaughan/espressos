@@ -62,7 +62,7 @@ class OrderList:
         self.mutex.release()
    
     # Returns a string of all the orders in the queue 
-    def toString(self):
+    def __str__(self):
         string = ""
         self.mutex.acquire()
         for i in range(len(self.queue)):

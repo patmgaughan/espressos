@@ -42,7 +42,7 @@ class Order:
         Instance Methods
     '''
     
-    def toString(self):
+    def __str__(self):
         return self.pizza.toString()
 
     # expired()
