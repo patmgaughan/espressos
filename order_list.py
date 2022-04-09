@@ -67,10 +67,29 @@ class OrderList:
         self.mutex.acquire()
         for i in range(len(self.queue)):
             if not self.queue[i].expired():
-                string += (self.queue[i].toString() + ", ")
+                string += (str(self.queue[i]) + ", ")
         self.mutex.release()
         return string
 
+    # orderString(index)
+    # Returns:  the string of the order at index in the queue
+    #           or None if index is out of bounds 
+    #
+    # Notes:    DOES NOT check if expired
+    #           Returns None if index out of bounds
+    #           Zero indexed
+    def orderString(self, index):
+        
+        self.mutex.acquire()
+        # bounds check
+        if index >= len(self.queue) or index < 0:
+            self.mutex.release()
+            return None
+
+        else:
+            string = str(self.queue[index])
+            self.mutex.release()
+            return string
     
     
        
