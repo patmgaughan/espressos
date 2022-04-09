@@ -70,6 +70,12 @@ class OrderList:
                 string += (str(self.queue[i]) + ", ")
         self.mutex.release()
         return string
+    
+    def __len__(self):
+        self.mutex.acquire()
+        length = len(self.queue)
+        self.mutex.release()
+        return length
 
     # orderString(index)
     # Returns:  the string of the order at index in the queue
