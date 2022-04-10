@@ -2,7 +2,8 @@ from color import Color
 
 class Pizza:
 
-    possibleToppings = {"ham", "peperoni", "anchovies", \
+    #maybe fix
+    possibleToppings = {"ham", "pepperoni", "anchovies", \
                         "green_peppers", "olives", "onions", \
                         "pineapple"} #set
 
@@ -65,7 +66,11 @@ class Pizza:
         if(self.isDough()):
             output += "pizza dough"
         elif(self.cheese != None):
-            output += "cheesy pizza"
+            if(self.cheese == "vegan_cheese"):
+                output += "vegan "
+            output += "cheesy pizza "
+            if(self.sauced == None):
+                output += "(no sauce)"
         else:
             output += "sauced pizza"
 

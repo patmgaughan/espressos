@@ -56,6 +56,10 @@ class Order:
     # fulfullOrder(pizza)
     # Returns: True if the given pizza is equal to the instance's pizza
     def fulfillOrder(self, pizza):
+
+        print("Our Pizza: {}".format(pizza.toString()))
+        print("Pizza On OrderList: {}".format(self.pizza.toString()))
+
         if (self.pizza == pizza):
             return True
         else:
@@ -116,7 +120,8 @@ class Order:
             toppings = Order.choose_toppings(5, True)
 
         # Pizza(sauced_bool, cheese_str, baked_bool, toppings_set)    
-        return Pizza(Order.sauce_or_not(), Order.choose_cheese(), True, set(toppings))   
+        #return Pizza(Order.sauce_or_not(), Order.choose_cheese(), True, set(toppings))
+        return Pizza(True, "cheese", True, set(toppings))   
                     
     
 
