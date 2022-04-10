@@ -62,17 +62,69 @@ class OrderList:
         self.mutex.release()
    
     # Returns a string of all the orders in the queue 
-    def toString(self):
+    def __str__(self):
         string = ""
         self.mutex.acquire()
         for i in range(len(self.queue)):
             if not self.queue[i].expired():
-                string += (self.queue[i].toString() + ", ")
+                string += (str(self.queue[i]) + ", ")
         self.mutex.release()
         return string
+    
+    def __len__(self):
+        self.mutex.acquire()
+        length = len(self.queue)
+        self.mutex.release()
+        return length
 
+    # orderString(index)
+    # Returns:  the string of the order at index in the queue
+    #           or None if index is out of bounds 
+    #
+    # Notes:    DOES NOT check if expired
+    #           Returns None if index out of bounds
+    #           Zero indexed
+    def orderString(self, index):
+        
+        self.mutex.acquire()
+        # bounds check
+        if index >= len(self.queue) or index < 0:
+            self.mutex.release()
+            return None
+
+        elif self.queue[index].expired():
+            self.mutex.release()
+            return None
+
+        else:
+            string = str(self.queue[index])
+            self.mutex.release()
+            return string
     
-    
+    # topFive(self)
+    # Returns:  a list of strings of the first 5 orders 
+    # Notes:    puts the string "Empty"  if less than 5 orders
+    def topFive(self):
+        topFive = []
+        
+        for i in range(len(self)):
+            
+            if len(topFive) >= 5:
+                break
+
+            string = self.orderString(i)
+
+            if string is None:
+                continue
+            else:
+                topFive.append(string)
+            
+        # if there are not more than 5 orders
+        while len(topFive) < 5:
+            topFive.append("Empty")
+        
+        return topFive
+                 
        
     
 

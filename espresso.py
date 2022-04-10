@@ -10,6 +10,35 @@ commands = {"w":"moveUp", "s":"moveDown", "a":"moveLeft", "d":"moveRight",\
             "trash":"commandTrash", "bake":"commandBake", "serve":"commandServe", \
             "get_":"get_"}
 
+# printGame(player, kitchen, order_list)
+# Returns:  nothing, evaluated for printing side effect
+# Pupose:   Prints the entire game to the console 
+# Notes:    Prints game like:
+#           player1 holds blah
+#           - - - - - ^ ^ - -    Orders Queue
+#           - - - - - - - - -  ---------------
+#           - - - - - - - - -  1) orders here
+#           command: 
+def printGame(player, kitchen, order_list):
+    board = [""] * (Kitchen.HEIGHT + 1)
+    
+    board[0] = player.inventory()
+    
+    for i in range(Kitchen.HEIGHT):
+        board[i + 1] = kitchen.getRow(i)
+    
+    board[1] += "      Order Queue"
+    board[2] += " ---------------------"
+  
+    topFive = order_list.topFive()
+    for i in range(len(topFive)):
+        board[i + 3] += " {}) {}".format(i + 1, topFive[i]) 
+
+    for i in range(len(board)):
+        print(board[i]) 
+
+
+    
 # i think most manipulation is
 # done through the cooks
 def run(kitchen, player1, order_list):
@@ -46,9 +75,10 @@ def run(kitchen, player1, order_list):
 
         if(msg != ""):
             print(msg)
-        print(player1.inventory())
-        print(kitchen)
-        print(order_list.toString())
+        #print(player1.inventory())
+        #print(kitchen)
+        #print(order_list.toString())
+        printGame(player1, kitchen, order_list)
 
 def main():
     kitchen = Kitchen()
@@ -57,7 +87,7 @@ def main():
     order_list = OrderList()
     #start game
     print("Welcome to Espresso's")
-    print(kitchen)
+    printGame(player1, kitchen, order_list)
     #run game
     run(kitchen, player1, order_list)
 
