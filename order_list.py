@@ -56,10 +56,11 @@ class OrderList:
 
                 # release lock before returning
                 self.mutex.release()
-                return
+                return True, "Pizza has been served"
         # if no pizza matches an order in the queue then do nothing
         # and release lock
         self.mutex.release()
+        return False, "Pizza has not been ordered"
    
     # Returns a string of all the orders in the queue 
     def __str__(self):

@@ -68,6 +68,13 @@ def run(kitchen, player1, order_list):
                 func = getattr(player1,func_name,command_not_found) 
                 if(command == "get_"):
                     succ, msg = func(arg1) # <-- this should work, and just pass in a value if needed
+                elif(command == "serve"):
+                    succ, msg = func()
+                    if(succ):
+                        pizza = player1.emptyHands()
+                        succ, msg = order_list.fulfillOrder(pizza)
+                        if(not succ):
+                            player1.give(pizza)
                 else:
                     succ, msg = func()
             else:

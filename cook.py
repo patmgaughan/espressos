@@ -136,13 +136,10 @@ class Cook:
         if(not isinstance(self.holding, Pizza)):
             return False, "Must hold a pizza to serve"
 
-        pizza = self.emptyHands()
-        if(pizza.baked != True):
-            self.give(pizza)
+        if(self.holding.baked != True):
             return False, "Must bake pizza before you serve it!"
 
-        return True, "Pizza has been served"
-        #is there an order on the queue that matches the pizza we order
+        return True, ""
         
 
     #these will all be simplified soon
