@@ -97,3 +97,26 @@ class Kitchen:
         self.put(WorkStation(), 3, 5)
         self.put(WorkStation(), 3, 6)
         self.put(WorkStation(), 3, 7)
+
+
+    # getRow(row)
+    # Returns:  The string of the kitchen board based on the row given
+    # Purpose:  Print the kitchen line by line
+    # Notes:    Assuming zero-indexing!!!
+    def getRow(self, row):
+        line = ""
+        
+        # loop over the row in the floor
+        for obj in self.floor[row]:
+            # based on what's in the row add the corresponding string
+            if(obj == None):
+                line += "  "
+            else:
+                line += str(obj) + " "
+
+        return line
+
+
+
+
+
