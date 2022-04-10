@@ -10,7 +10,15 @@ commands = {"w":"moveUp", "s":"moveDown", "a":"moveLeft", "d":"moveRight",\
             "trash":"commandTrash", "bake":"commandBake", "serve":"commandServe", \
             "get_":"get_"}
 
-
+# printGame(player, kitchen, order_list)
+# Returns:  nothing, evaluated for printing side effect
+# Pupose:   Prints the entire game to the console 
+# Notes:    Prints game like:
+#           player1 holds blah
+#           - - - - - ^ ^ - -    Orders Queue
+#           - - - - - - - - -  ---------------
+#           - - - - - - - - -  1) orders here
+#           command: 
 def printGame(player, kitchen, order_list):
     board = [""] * (Kitchen.HEIGHT + 1)
     
