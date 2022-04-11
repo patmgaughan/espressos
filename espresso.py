@@ -43,11 +43,18 @@ def printGame(player, kitchen, order_list, order_counts):
 # i think most manipulation is
 # done through the cooks
 def run(kitchen, player1, order_list):
-    order_thread = threading.Thread(target=order_generator, args=("hard", order_list,))
+    game_over = threading.Event()
+    
+    # Create thread as a daemon so we do not have to wait for it 
+    # to finish
+    order_thread = threading.Thread(target=order_generator, 
+                                    args=("hard", order_list, game_over), 
+                                    daemon=True)
     order_thread.start()
+
     completed_orders = 0
     expired_orders = 0
-    while True:
+    while expired_orders < 10:
         succ = False
         msg = ""
         
@@ -92,6 +99,8 @@ def run(kitchen, player1, order_list):
         expired_orders += order_list.removeExpired()
 
         printGame(player1, kitchen, order_list, (completed_orders, expired_orders))
+
+    game_over.set()
 
 def main():
     kitchen = Kitchen()

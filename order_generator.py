@@ -11,7 +11,7 @@ from order import Order
 from order_list import OrderList
 from pizza import Pizza
 
-def order_generator(difficulty, order_list):
+def order_generator(difficulty, order_list, game_over):
    
     # difficulty sets the rate and rate cap of orders 
     # TODO: fine tune the rates and caps
@@ -39,7 +39,7 @@ def order_generator(difficulty, order_list):
     # loop for order making
     # TODO: figure out way to interrupt thread (exceptions doesn't work)
     #       maybe using multiprocessing and pipes??
-    while True:
+    while not game_over.is_set():
         pizza = Order.build_pizza(start_time) 
         order = Order(pizza)
         order_list.add(order)
@@ -50,3 +50,4 @@ def order_generator(difficulty, order_list):
         if order_rate < rate_cap:
             order_rate = rate_cap
         
+    
