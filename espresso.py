@@ -19,16 +19,17 @@ commands = {"w":"moveUp", "s":"moveDown", "a":"moveLeft", "d":"moveRight",\
 #           - - - - - - - - -  ---------------
 #           - - - - - - - - -  1) orders here
 #           command: 
-def printGame(player, kitchen, order_list):
+def printGame(player, kitchen, order_list, order_counts):
     board = [""] * (Kitchen.HEIGHT + 1)
     
     board[0] = player.inventory()
     
     for i in range(Kitchen.HEIGHT):
         board[i + 1] = kitchen.getRow(i)
+   
     
-    board[1] += "      Order Queue"
-    board[2] += " ---------------------"
+    board[1] += "      Order Queue" + "      Completed Orders: \033[32m{}".format(order_counts[0])
+    board[2] += " ---------------------" + " Expired Orders:   \033[91m{}".format(order_counts[1])
   
     topFive = order_list.topFive()
     for i in range(len(topFive)):
@@ -42,11 +43,21 @@ def printGame(player, kitchen, order_list):
 # i think most manipulation is
 # done through the cooks
 def run(kitchen, player1, order_list):
-    order_thread = threading.Thread(target=order_generator, args=("hard", order_list,))
+    game_over = threading.Event()
+    
+    # Create thread as a daemon so we do not have to wait for it 
+    # to finish
+    order_thread = threading.Thread(target=order_generator, 
+                                    args=("hard", order_list, game_over), 
+                                    daemon=True)
     order_thread.start()
-    while True:
+
+    completed_orders = 0
+    expired_orders = 0
+    while expired_orders < 10:
         succ = False
         msg = ""
+        
         #get_ command
         command = input("Command: ")
         arg1 = ""
@@ -73,7 +84,9 @@ def run(kitchen, player1, order_list):
                     if(succ):
                         pizza = player1.emptyHands()
                         succ, msg = order_list.fulfillOrder(pizza)
-                        if(not succ):
+                        if succ:
+                            completed_orders += 1
+                        else:
                             player1.give(pizza)
                 else:
                     succ, msg = func()
@@ -82,10 +95,12 @@ def run(kitchen, player1, order_list):
 
         if(msg != ""):
             print(msg)
-        #print(player1.inventory())
-        #print(kitchen)
-        #print(order_list.toString())
-        printGame(player1, kitchen, order_list)
+
+        expired_orders += order_list.removeExpired()
+
+        printGame(player1, kitchen, order_list, (completed_orders, expired_orders))
+
+    game_over.set()
 
 def main():
     kitchen = Kitchen()
@@ -94,7 +109,7 @@ def main():
     order_list = OrderList()
     #start game
     print("Welcome to Espresso's")
-    printGame(player1, kitchen, order_list)
+    printGame(player1, kitchen, order_list, (0, 0))
     #run game
     run(kitchen, player1, order_list)
 

@@ -16,6 +16,7 @@ class OrderList:
         self.queue = []
         self.mutex = threading.Lock()
    
+    
 
     '''
         Instance Methods
@@ -30,15 +31,16 @@ class OrderList:
     def removeExpired(self):
         count = 0
         self.mutex.acquire()
+        
+        total_orders = len(self.queue)
+        # create a new list containing only the non-expired orders
+        non_expired = [x for x in self.queue if not x.expired()]
+        self.queue = non_expired
 
-        for i in range(len(self.queue)):
-    
-            if self.queue[i].expired():
-                del self.queue[i]
-                count += 1
-
+        expired_count = total_orders - len(self.queue)
+       
         self.mutex.release()
-        return count
+        return expired_count
         
            
 
