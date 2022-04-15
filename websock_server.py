@@ -3,19 +3,14 @@
 import asyncio
 import websockets
 from pprint import pprint
+from player_ops import CMND_TO_FUNC
 
 import kitchen
 import cook
-import oven
-import counter
 
 
 kitch = kitchen.Kitchen()
-oven.Oven(kitch, 6, 6)
-oven.Oven(kitch, 6, 5)
-counter.Counter(kitch, 2, 0)
-counter.Counter(kitch, 3, 0)
-kitch.print()
+kitch.setUp()
 
 clients = []
 
@@ -35,7 +30,13 @@ async def hello(websocket):
     print("clienst: ", clients)
     while True:
         resp = await websocket.recv()
-        func_name = resp.strip()
+        func_name = CMND_TO_FUNC.get(resp)
+
+        if not func_name:
+            await websocket.send("not a command")
+            continue
+
+
         print(f"<<< {func_name}")
 
         # func = getattr(globals()["ops"], func_name)
