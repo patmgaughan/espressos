@@ -2,14 +2,18 @@ from color import Color
 
 class Pizza:
 
-    possibleToppings = {"ham", "peperoni", "anchovies", \
+    #maybe fix
+    possibleToppings = {"ham", "pepperoni", "anchovies", \
                         "green_peppers", "olives", "onions", \
                         "pineapple"} #set
 
     # starts as just a dought
     def __init__(self, sauced = False, cheese = None, \
-                       baked = False, toppings = set()):
-        self.toppings = toppings #set
+                       baked = False, toppings = None):
+        if(toppings == None):
+            self.toppings = set()
+        else:
+            self.toppings = toppings #set
         self.baked    = baked #bool
         self.sauced   = sauced #bool
         self.cheese   = cheese #string
@@ -53,6 +57,7 @@ class Pizza:
         return color + shape + "\033[00m"
 
     # this can be much better
+    # this is also wrong lol
     def toString(self):
         output = ""
         if(self.baked == False):
@@ -61,7 +66,11 @@ class Pizza:
         if(self.isDough()):
             output += "pizza dough"
         elif(self.cheese != None):
-            output += "cheesy pizza"
+            if(self.cheese == "vegan_cheese"):
+                output += "vegan "
+            output += "cheesy pizza "
+            if(self.sauced == None):
+                output += "(no sauce)"
         else:
             output += "sauced pizza"
 
@@ -77,9 +86,10 @@ class Pizza:
     # an error if the topping is not a possible topping
     #return topping if it can't be added, None otherwise
     def addTopping(self, topping):
+        print("Pizza about to add topping!")
         #None
         #see if it exists in topping
-        if(not (topping in self.possibleToppings)):
+        if(not (topping in Pizza.possibleToppings)):
             print("ERROR: This is not a possible topping")
             return topping
             #else, there was an error with fun calls
