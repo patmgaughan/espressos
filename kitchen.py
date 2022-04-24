@@ -71,7 +71,7 @@ class Kitchen:
         self.put(Counter(), 0, 3)
         self.put(Counter(), 0, 4)
 
-        self.put(Fridge(), 4, 7)
+        #self.put(Fridge(), 4, 7)
         self.put(Fridge(), 5, 7)
 
         self.put(DoughStation(), 6, 2)
@@ -86,9 +86,9 @@ class Kitchen:
         tank2.setShape("Q")
         self.put(tank2, 0, 1)
 
-        self.put(ToppingCounter(), 0, 7)
-        self.put(ToppingCounter(), 1, 7)
-        self.put(ToppingCounter(), 2, 7)
+        self.put(ToppingCounter(0), 0, 7)
+        self.put(ToppingCounter(1), 1, 7)
+        self.put(ToppingCounter(2), 2, 7)
 
         self.put(TrashCan(), 6, 0)
 
