@@ -103,7 +103,10 @@ def run(kitchen, player1, order_list):
              print("Pini's Pizza has bought Espressos")
              break
         if(command == "-h"):
-            print("Possible Commands")
+            string = "Possible Commands: "
+            for c in commands:
+                string += c + "|"
+            print(string)
         else: #all other commands
             def command_not_found(): # just in case we dont have the function
                 print("Command \"" + command + "\" unknown: try \"-h\"")
