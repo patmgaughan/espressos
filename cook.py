@@ -17,9 +17,88 @@ class Cook:
         self.row = row
         self.fname = fname
         self.holding = None
+        self.color = Color.chef
+        self.reset = "\033[00m"
+        self.count = 0
+        self.up = True
+
+        # self.line1 = " MmmM "
+        # self.line2 = " |__| "
+        # self.line3 = " (oo) "
+
+        # self.line1 = " qmmp "
+        # self.line2 = " |__| "
+        # self.line3 = " (oo) "
+
+        # self.line1 = " |mm| "
+        # self.line2 = " (oo) "
+        # self.line3 = " -/\- "
+
+        # self.line1 = " MmmM "
+        # self.line2 = " (oo) "
+        # self.line3 = " -[]- "
+
+        # self.line1 = " >o) "
+        # self.line2 = " (__)>"
+        # self.line3 = "  ||  "
+
+        # self.line1 = "    " "
+        # self.line2 = "\___Q "
+        # self.line3 = "/\ /\ "
+
+        # self.line1 = "()__()"
+        # self.line2 = "( oo )"
+        # self.line3 = "q    p"
+
+        # self.line1 = " MmmM "
+        # self.line2 = "-(oo)-"
+        # self.line3 = "  ||  "
+        # self.line1 = " MmmM "
+        # self.line2 = "-(oo)-"
+        # self.line3 = "  ||  "
+
+        self.line1 = " (oo) "
+        self.line2 = " -[]-"
+        self.line3 = "  ||  "
+
+        # self.line1 = " (oo) "
+        # self.line2 = " -/\-"
+        # self.line3 = "  ||  "
 
     def __str__(self):
         return Color.chef + "*" + "\033[00m"
+
+    def stringline2(self):
+        if(self.holding == None):
+            return self.line2 + " "
+        elif(isinstance(self.holding, Pizza)):
+            return self.line2 + Pantry.ingredientStr["pizza"]
+        elif(self.holding in Pantry.ingredientStr):
+            return self.line2 + Pantry.ingredientStr[self.holding]
+        else:
+            return self.line2 + "*"
+
+    def stringline3(self):
+
+        if(self.count == -1):
+            return "  /|  "
+        elif(self.count == 0):
+            return "  ||  "
+        else:
+           return "  |\  " 
+
+        
+
+    def line(self, num):
+        string = ""
+        if(num == 1):
+            string = self.line1
+        elif(num == 2):
+            string = self.stringline2()
+        elif(num == 3):
+            string = self.stringline3()
+
+        return self.color + string + self.reset
 
     def name(self):
         return self.fname
@@ -182,16 +261,35 @@ class Cook:
         return objects
 
     def move(self, row, col):
+        
         if(self.kitchen.outOfBounds(row, col)):
+            #change look
+            self.count = 0
+            self.line3 = "  ||  "
+            #end change look
             return False, ""
         if(not self.kitchen.isEmpty(row, col)):
+            #change look
+            self.count = 0
+            self.line3 = "  ||  "
+            #end change look
             return False, ""
 
         self.kitchen.remove(self.row, self.col) 
         self.row = row
         self.col = col
         self.kitchen.put(self, self.row, self.col)
+        #change look
+        if(self.up):
+            self.count +=1
+        else:
+            self.count -=1
 
+        if(self.count == 1):
+            self.up = False
+        elif(self.count == -1):
+            self.up = True
+        #done changing look
         return True, ""
 
     def moveDown(self):

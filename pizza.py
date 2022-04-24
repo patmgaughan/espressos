@@ -1,5 +1,25 @@
 from color import Color
 
+ingredientStr = {
+        "dough":Color.YELLOW + "*" + Color.reset, 
+        "sauce":Color.RED + "~" + Color.reset,
+        "cheese":Color.WHITE + "#" + Color.reset,
+        "vegan_cheese":Color.YELLOW + "#" + Color.reset,
+
+        "anchovies":Color.CYAN + "~" + Color.reset,
+        #toppings counter
+        "ham":Color.PINK + "<" + Color.reset,
+        "pineapple":Color.YELLOW + ">" + Color.reset,
+
+        "pepperoni":Color.PINK + "o" + Color.reset,
+        "olives":Color.GREEN + "%" + Color.reset,
+
+        "onions":Color.RED + "&" + Color.reset,
+        "green_peppers":Color.GREEN + "{" + Color.reset,
+        #end toppings counter
+        "pizza":Color.YELLOW + "@" + Color.reset
+    }
+
 class Pizza:
 
     #maybe fix
@@ -18,6 +38,7 @@ class Pizza:
         self.sauced   = sauced #bool
         self.cheese   = cheese #string
 
+        self.secondToLastTopping = None
         self.lastTopping = None #used for anchovie printing
 
     def __eq__(self, obj):
@@ -36,6 +57,7 @@ class Pizza:
                (self.toppings == set())
 
     #lets make this cleaner :)
+    #okay this could have a two version or a 4 string version
     def __str__(self):
         shape = "#"
         color = "\033[95m"
@@ -54,7 +76,51 @@ class Pizza:
         else:
             color = Color.topped
 
-        return color + shape + "\033[00m"
+        return color + shape + Color.reset
+
+    def toStringLength4(self):
+        string = ""
+        string += Color.doughStation + "(" + Color.reset #start pizza
+        
+        if(self.isDough()):
+            string += Color.topped + "  " + Color.reset
+        elif(self.cheese != None and self.toppings == set()):
+            string += Color.cheese + "##" + Color.reset
+        elif(self.sauced == True and self.toppings == set()):
+            string += Color.stove + "~~" + Color.reset
+        else:
+            iterator = iter(self.toppings)
+            ingredient1 = next(iterator)
+            ingredient2 = ingredient1
+
+            for e in self.toppings:
+                ingredient1 = ingredient2
+                ingredient2 = e
+
+            #if(len(self.toppings) >= 2):
+            #    ingredient = next(iterator)
+            #ingredientStr2 = ingredientStr[ingredient]
+                
+            string += ingredientStr[ingredient1] + ingredientStr[ingredient2]
+
+        string += Color.doughStation + ")" + Color.reset #end pizza
+        return string
+
+    def color(self):
+        color = "\033[95m"
+
+        if(self.isDough()):
+            color = Color.doughStation
+        elif(self.cheese != None and self.toppings == set()):
+            color = Color.cheese
+        elif(self.sauced == True and self.toppings == set()):
+            color = Color.stove
+        elif("anchovies" == self.lastTopping):
+            color = Color.tank
+        else:
+            color = Color.topped
+
+        return color
 
     # this can be much better
     # this is also wrong lol
@@ -97,6 +163,7 @@ class Pizza:
             print("This topping has already been added to the Pizza")
             return topping
         else:
+            self.secondToLastTopping = self.lastTopping
             self.lastTopping = topping
             self.toppings.add(topping)
             return None
