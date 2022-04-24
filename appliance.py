@@ -30,7 +30,7 @@ line1 = "|   |"
 line2 = "| + |"
 line3 = "|   |"
 
-line1 = "  ()  "
+line1 = " (  ) "
 line2 = " -[]- "
 line3 = "  /\  "
 
@@ -68,6 +68,10 @@ lineb3 = "[     ]"
 # linea2 = "|oven|"
 # linea3 = "|____|"
 
+# linea1 = " * * *"
+# linea2 = "------"
+# linea3 = "dough|"
+
 # linea1 = "(    )"
 # linea2 = " )  ( "
 # linea3 = "(____)"
@@ -83,21 +87,6 @@ linea3 = "  |   "
 # lineb1 = " #  # "
 # lineb2 = " #  # "
 # lineb3 = " #  # "
-
-def formatLine(color, line):
-    return color + line + "\033[00m"
-
-string = ""
-string += formatLine(Color.chef, line1) + formatLine(Color.fun2, linea1) + formatLine(Color.fun, lineb1) + "\n"
-string += formatLine(Color.chef, line2) + formatLine(Color.fun2, linea2) + formatLine(Color.fun, lineb2) + "\n"
-string += formatLine(Color.chef, line3) + formatLine(Color.fun2, linea3) + formatLine(Color.fun, lineb3) + "\n"
-
-#string = Color.chef + line1 + "\n" + line2 + "\n" + line3 + "\n" + "\033[00m"
-print(string)
-
-#string = Color.toppingCounter + linea1 + "\n" + linea2 + "\n" + linea3 + "\n" + "\033[00m"
-#print(string)
-#end patrick changes
 
 class Appliance:
     def __init__(self):
@@ -218,14 +207,8 @@ class WorkStation(Appliance):
             self.pizza.cheese = item
             item = None
         else:
-            #returns the item if it can not be added, None otherwise
-            #item = self.pizza.addTopping(item) #it didn't work when i pasted in 
-            # this code
-            #try 1, still doesnt work
-            self.pizza.toppings.add(item)
+            self.pizza.addTopping(item)
             item = None
-            #end try 1
-            #pizza.toppings = {item}, this works thou??
 
         print("Workstation holds " + self.pizza.toString())
         return item #always return what you had, maybe this is changed to null
@@ -317,11 +300,18 @@ class DoughStation(limitLessAppliance):
     def __init__(self):
         super().__init__()
         self.shape = "="
-        self.color = Color.doughStation
+        self.color = Color.BLACK
 
         # self.l1 = "~~~~~~"
         # self.l2 = "|____|"
-        # self.l3 = "][ ]["
+        # self.l3 = "][ ][ "
+
+        self.l1 = "|*  *|"
+        self.l2 = "|____|"
+        self.l3 = " /  \ "
+
+    def line1(self):
+        return self.color + "|" + Color.YELLOW + "*  *" + self.color + "|" + Color.reset
 
     def name(self):
         return "doughStation"

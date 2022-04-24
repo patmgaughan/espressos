@@ -32,5 +32,6 @@ class Pantry:
         "onions":Color.RED + "&" + Color.reset,
         "green_peppers":Color.GREEN + "{" + Color.reset,
         #end toppings counter
+        "raw pizza":Color.WHITE + "@" + Color.reset,
         "pizza":Color.YELLOW + "@" + Color.reset
     }

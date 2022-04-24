@@ -21,6 +21,9 @@ class Cook:
         self.reset = "\033[00m"
         self.count = 0
         self.up = True
+        self.hat = False
+        self.duck = False
+        self.right = True
 
         # self.line1 = " MmmM "
         # self.line2 = " |__| "
@@ -34,13 +37,21 @@ class Cook:
         # self.line2 = " (oo) "
         # self.line3 = " -/\- "
 
+        # hat me
         # self.line1 = " MmmM "
         # self.line2 = " (oo) "
         # self.line3 = " -[]- "
 
-        # self.line1 = " >o) "
-        # self.line2 = " (__)>"
-        # self.line3 = "  ||  "
+        self.duckHatRight  = "  MmM "
+        self.duckHeadRight = "  (o> "
+        self.duckArmsRight = "<(__)"
+        #                    "  ||  "
+
+        self.duckHatLeft = " MmM  "
+        self.duckHeadLeft = " >o)  "
+        self.duckArmsLeft =  "(__)>"
+        #                   "  ||  "
+        
 
         # self.line1 = "    " "
         # self.line2 = "\___Q "
@@ -50,12 +61,10 @@ class Cook:
         # self.line2 = "( oo )"
         # self.line3 = "q    p"
 
-        # self.line1 = " MmmM "
-        # self.line2 = "-(oo)-"
-        # self.line3 = "  ||  "
-        # self.line1 = " MmmM "
-        # self.line2 = "-(oo)-"
-        # self.line3 = "  ||  "
+        self.chefsHat = " MmmM "
+        self.head     = " (oo) "
+        self.arms     = " -[]-"
+        self.feet     = "  ||  "
 
         self.line1 = " (oo) "
         self.line2 = " -[]-"
@@ -68,17 +77,117 @@ class Cook:
     def __str__(self):
         return Color.chef + "*" + "\033[00m"
 
-    def stringline2(self):
-        if(self.holding == None):
-            return self.line2 + " "
-        elif(isinstance(self.holding, Pizza)):
-            return self.line2 + Pantry.ingredientStr["pizza"]
-        elif(self.holding in Pantry.ingredientStr):
-            return self.line2 + Pantry.ingredientStr[self.holding]
+    def mileyCyrus(self):
+        self.head     = " (" + Color.CYAN + "oo" + Color.reset + ") "
+        self.duckHeadRight = "  (" + Color.CYAN + "o" + Color.reset + "> "
+        self.duckHeadLeft  = " >" + Color.CYAN + "o" + Color.reset + ")  "
+        return True, "Lovely Eyes"
+
+    def noMileyCyrus(self):
+        self.head          = " (oo) "
+        self.duckHeadRight = "  (o> "
+        self.duckHeadLeft  = " >o)  "
+        return True, "Lovely Eyes"
+
+    def wearDress(self):
+        self.arms = " -/\-"
+        return True, "Looking Good!"
+
+    def wearShirt(self):
+        self.arms = " -[]-"
+        return True, "Looking Good!"
+
+    def toggleHat(self):
+        self.hat = not self.hat
+        return True, "Looking Good!"
+
+    def toggleDuck(self):
+        self.duck = not self.duck
+        return True, "Quack Quack"
+
+    def commandEat(self):
+        item = self.emptyHands()
+        if(item != None):
+            return True, "Yum"
         else:
-            return self.line2 + "*"
+            return False, "Nothing to Eat!"
+
+    def stringline1(self):
+        if(self.duck and self.hat):
+            if(self.right):
+                return self.duckHatRight
+            else:
+                return self.duckHatLeft
+        elif(self.duck):
+            if(self.right):
+                return self.duckHeadRight
+            else:
+                return self.duckHeadLeft
+
+        if(self.hat):
+            return self.chefsHat
+        else:
+            return self.head
+
+    def stringline2(self):
+        if(self.duck and self.hat):
+            if(self.right):
+                return self.duckHeadRight
+            else:
+                return self.duckHeadLeft
+        elif(self.duck):
+            if(self.right):
+                return self.stringArms(self.duckArmsRight)
+            else:
+                return self.stringArmsLeft(self.duckArmsLeft)
+
+        if(self.hat):
+            return self.head
+        else:
+            return self.stringArms(self.arms)
 
     def stringline3(self):
+        if(self.duck and self.hat):
+            if(self.right):
+                return self.stringArms(self.duckArmsRight)
+            else:
+                return self.stringArmsLeft(self.duckArmsLeft)
+        elif(self.duck):
+            return self.stringLegs()
+
+        if(self.hat):
+            return self.stringArms(self.arms)
+        else:
+            #only change walking when not wearing hat
+            return self.stringLegs()
+
+    def stringArms(self, arms):
+        if(self.holding == None):
+            return arms + " "
+        elif(isinstance(self.holding, Pizza)):
+            if(self.holding.isBaked()):
+                return arms + Pantry.ingredientStr["pizza"]
+            else:
+                return arms + Pantry.ingredientStr["raw pizza"]
+        elif(self.holding in Pantry.ingredientStr):
+            return arms + Pantry.ingredientStr[self.holding]
+        else:
+            return arms + "*"
+
+    def stringArmsLeft(self, arms):
+        if(self.holding == None):
+            return " " + arms
+        elif(isinstance(self.holding, Pizza)):
+            if(self.holding.isBaked()):
+                return Pantry.ingredientStr["pizza"] + arms
+            else:
+                return Pantry.ingredientStr["raw pizza"] + arms
+        elif(self.holding in Pantry.ingredientStr):
+            return Pantry.ingredientStr[self.holding] + arms
+        else:
+            return "*" + arms
+
+    def stringLegs(self):
 
         if(self.count == -1):
             return "  /|  "
@@ -92,7 +201,7 @@ class Cook:
     def line(self, num):
         string = ""
         if(num == 1):
-            string = self.line1
+            string = self.stringline1()
         elif(num == 2):
             string = self.stringline2()
         elif(num == 3):
@@ -299,8 +408,10 @@ class Cook:
         return self.move(self.row-1, self.col)
 
     def moveRight(self):
+        self.right = True
         return self.move(self.row, self.col+1)
 
     def moveLeft(self):
+        self.right = False
         return self.move(self.row, self.col-1)
 

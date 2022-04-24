@@ -10,7 +10,14 @@ from order_generator import order_generator
 commands = {"w":"moveUp", "s":"moveDown", "a":"moveLeft", "d":"moveRight",\
             "get":"commandGet", "put":"commandPut", "take":"commandTake", \
             "trash":"commandTrash", "bake":"commandBake", "serve":"commandServe", \
-            "get_":"get_"}
+            "get_":"get_",\
+            #new commands!
+            "change hat":"toggleHat", "hat":"toggleHat",
+            "wear shirt":"wearShirt", "shirt":"wearShirt",
+            "wear dress":"wearDress", "dress":"wearDress",
+            "miley":"mileyCyrus", "noah":"noMileyCyrus", 
+            "eat":"commandEat",
+            "duck":"toggleDuck"}
 
 # printGame(player, kitchen, order_list)
 # Returns:  nothing, evaluated for printing side effect
@@ -42,8 +49,17 @@ def printGame(player, kitchen, order_list):
                 else:
                     line += space.line(j)
             lineNum = (row * 3) + (j - 1)
-            if (lineNum < 5):
-                print(line + topFive[lineNum])
+            linesBefore = 4
+            if(lineNum == 0):
+                print(line + player.inventory())
+            elif(lineNum == 1):
+                print(line + " ---------------------")
+            elif(lineNum == 2):
+                print(line + "      Order Queue")
+            elif(lineNum == 3):
+                print(line + " ---------------------")
+            elif ((lineNum - linesBefore) < 5) and ((lineNum - linesBefore) >= 0):
+                print(line + str(lineNum-linesBefore+1) + ") "+ topFive[lineNum - linesBefore])
             else:
                 print(line)
             
