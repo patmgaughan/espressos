@@ -141,7 +141,10 @@ class Pizza:
             output += "sauced pizza"
 
         if(self.toppings != set()):
-            output += (" " + str(self.toppings))
+            #output += (" " + str(self.toppings))
+            output += "with "
+            for i in self.toppings:
+                output += str(i) + " (" + ingredientStr[i] + "), "
 
         return output
 
