@@ -7,8 +7,9 @@ from pprint import pprint
 
 async def receiver(websocket):
     print("ready to receive")
+    print("\033[1;30r\033[1;1H")
     async for message in websocket:
-        print(message)
+        print(f"\033[2A{message}\033[1B")
 
 async def sender(websocket):
     try:

@@ -1,38 +1,39 @@
 #!/usr/bin/env python
 
 import asyncio
+import argparse
 import websockets
 import aioconsole
 from pprint import pprint
 
-async def receiver(websocket):
-    print("ready to receive")
-    async for message in websocket:
-        print(message)
+async def client():
+    parser = argparse.ArgumentParser(
+        description='Performs some useful work.',
+    )
+    parser.add_argument(
+        '-i',
+        type=str,
+        default='localhost',
+        help='ip to run server on',
+    )
+    parser.add_argument(
+        '-p',
+        type=str,
+        default='8765',
+        help='port to run server on',
+    )
 
-async def sender(websocket):
-    try:
-        while True:
-            cmnd = await aioconsole.ainput()
-            await websocket.send(cmnd)
-    except EOFError:
-        pass
+    args = parser.parse_args()
 
-
-
-async def hello():
-    uri = "ws://10.247.83.240:8765"
-    async with websockets.connect(uri) as websocket:
-        consumer_task = asyncio.ensure_future(
-            receiver(websocket))
-        print("consuming")
-        producer_task = asyncio.ensure_future(
-            sender(websocket))
-        print("producing")
-        done, pending = await asyncio.wait(
-            [consumer_task, producer_task],
-            return_when=asyncio.FIRST_COMPLETED,
-        )
+    uri = f"ws://{args.i}:{args.p}"
+    async with websockets.connect(uri, ping_interval=None) as websocket:
+        await websocket.send("input")
+        try:
+            while True:
+                cmnd = input()
+                await websocket.send(cmnd)
+        except EOFError:
+            pass
 
 if __name__ == "__main__":
-    asyncio.run(hello())
+    asyncio.run(client())
