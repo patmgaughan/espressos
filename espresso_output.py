@@ -7,7 +7,25 @@ from pprint import pprint
 
 
 async def client_listener():
-    uri = "ws://localhost:8765"
+    parser = argparse.ArgumentParser(
+        description='Performs some useful work.',
+    )
+    parser.add_argument(
+        '-i',
+        type=str,
+        default='localhost',
+        help='ip to run server on',
+    )
+    parser.add_argument(
+        '-p',
+        type=str,
+        default='8765',
+        help='port to run server on',
+    )
+
+    args = parser.parse_args()
+
+    uri = f"ws://{args.i}:{args.p}"
     async with websockets.connect(uri) as websocket:
         await websocket.send("output")
         async for message in websocket:
