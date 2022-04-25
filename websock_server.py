@@ -15,6 +15,7 @@ from threadsafe_counter import ThreadsafeCounter
 
 import kitchen
 import cook
+from color import Color
 
 
 
@@ -57,7 +58,7 @@ async def server(kitch, clients, start_pos,
 
 
                 func = getattr(player, func_name)
-
+                # check if game over
                 if resp == "serve":
                     succ, msg = func()
                     if succ:
@@ -91,21 +92,58 @@ async def server(kitch, clients, start_pos,
                 await ws.send(stringGame(player, kitch, order_list, (completed_orders, expired_orders)))
 
 def stringGame(player, kitchen, order_list, order_counts):
-    board = [""] * (kitchen.HEIGHT + 1)
-
-    board[0] = player.inventory() if player is not None else ""
-
-    for i in range(kitchen.HEIGHT):
-        board[i + 1] = kitchen.getRow(i)
-
-    board[1] += "      Order Queue" + "      Completed Orders: \033[32m{}".format(order_counts[0])
-    board[2] += " ---------------------" + " Expired Orders:   \033[91m{}".format(order_counts[1])
+    # board = [""] * (kitchen.Kitchen.HEIGHT + 1)
 
     topFive = order_list.topFive()
-    for i in range(len(topFive)):
-        board[i + 3] += " {}) {}".format(i + 1, topFive[i])
+    white = Color.whiteBack + "  " + Color.reset
+    black = "  "
 
-    return "\n".join(board)
+    gamestring = ""
+
+
+    for row in range(kitchen.HEIGHT):
+        for j in range(1, 4):
+            print(j)
+            line = ""
+            for col in range(kitchen.WIDTH):
+                space = kitchen.at(row, col)
+                if (space == None):
+                    # line += "      "
+                    if (j == 0 or j == 2):
+                        # line += white + black + white
+                        line += "      "
+                    else:
+                        # line += black + white + black
+                        line += "      "
+                else:
+                    line += space.line(j)
+            lineNum = (row * 3) + (j - 1)
+            linesBefore = 4
+            if (lineNum == 0):
+
+                if player:
+                    print(line + player.inventory())
+                    gamestring += line + player.inventory() + "\n"
+                else:
+                    print(line)
+                    gamestring += line + "\n"
+            elif (lineNum == 1):
+                print(line + " ---------------------")
+                gamestring += line + " ---------------------" + "\n"
+            elif (lineNum == 2):
+                print(line + "      Order Queue")
+                gamestring += line + "      Order Queue\n" #+ "      Completed Orders: \033[32m{}".format(order_counts[0]) + "\n"
+            elif (lineNum == 3):
+                print(line + " ---------------------") # + "\n" # " " Expired Orders:   \033[91m{}".format(order_counts[1])
+                gamestring += line + " ---------------------" + "\n" # Expired Orders:   \033[91m{}".format(order_counts[1]) + "\n"
+            elif ((lineNum - linesBefore) < 5) and ((lineNum - linesBefore) >= 0):
+                print(line + str(lineNum-linesBefore+1) + ") "+ topFive[lineNum - linesBefore])
+                gamestring += line + str(lineNum - linesBefore + 1) + ") " + topFive[lineNum - linesBefore] + "\n"
+            else:
+                print(line)
+                gamestring += line + "\n"
+
+    return gamestring
 
 
 async def main():
@@ -193,6 +231,9 @@ async def main():
                     order_rate = rate_cap
 
                 expired_orders.add(order_list.removeExpired())
+
+                # if endgame
+                #     send out game over message and print
 
                 print(stringGame(None, kitch, order_list, (completed_orders, expired_orders)))
 
