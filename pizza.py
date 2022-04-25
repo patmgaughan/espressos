@@ -27,6 +27,8 @@ class Pizza:
                         "green_peppers", "olives", "onions", \
                         "pineapple"} #set
 
+    possibleCheese = {"cheese", "vegan_cheese"} #set
+
     # starts as just a dought
     def __init__(self, sauced = False, cheese = None, \
                        baked = False, toppings = None):

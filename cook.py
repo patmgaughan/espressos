@@ -4,6 +4,7 @@ from pizza import Pizza
 from color import Color
 from pantry import Pantry
 from appliance import *
+from random import randint
 import time
 
 class Cook:
@@ -24,6 +25,7 @@ class Cook:
         self.hat = False
         self.duck = False
         self.right = True
+        self.justAte = False
 
         # self.line1 = " MmmM "
         # self.line2 = " |__| "
@@ -66,19 +68,36 @@ class Cook:
         self.arms     = " -[]-"
         self.feet     = "  ||  "
 
+        #self.hat  = " qmmp "
         self.line1 = " (oo) "
         self.line2 = " -[]-"
         self.line3 = "  ||  "
 
         # self.line1 = " (oo) "
+        # self.line2 = "  []- "
+        # self.line3 = "  ||  "
+
+        # self.line1 = " (oo) "
         # self.line2 = " -/\-"
         # self.line3 = "  ||  "
+
+        # self.line1 = " ('') "
+        # self.line2 = " ~{}~ "
+        # self.line3 = "  !!  "
+
+        # self.line1 = " (XX) "
+        # self.line2 = " -()- "
+        # self.line3 = "  YY  "
+
+        # self.line1 = " (o0) "
+        # self.line2 = "  Y-  "
+        # self.line3 = "  |\  "
 
     def __str__(self):
         return Color.chef + "*" + "\033[00m"
 
     def mileyCyrus(self):
-        self.head     = " (" + Color.CYAN + "oo" + Color.reset + ") "
+        self.head          = " (" + Color.CYAN + "oo" + Color.reset + ") "
         self.duckHeadRight = "  (" + Color.CYAN + "o" + Color.reset + "> "
         self.duckHeadLeft  = " >" + Color.CYAN + "o" + Color.reset + ")  "
         return True, "Lovely Eyes"
@@ -108,6 +127,21 @@ class Cook:
     def commandEat(self):
         item = self.emptyHands()
         if(item != None):
+            if(isinstance(item, Pizza)):
+                if(item.isBaked()):
+                    item = "pizza"
+                else:
+                    item = "raw pizza"
+
+            print("***********************"+ item)
+            s = Pantry.ingredientStr[item]
+            self.justAte = True
+            if("[" in self.arms):
+                self.arms = " -[" + s + "]-"
+            else:
+                self.arms = " -/" + s + "\-"
+            self.duckArmsRight = "<(__" + s + ")"
+            self.duckArmsLeft =  "(" + s + "__)>"
             return True, "Yum"
         else:
             return False, "Nothing to Eat!"
@@ -162,30 +196,39 @@ class Cook:
             return self.stringLegs()
 
     def stringArms(self, arms):
-        if(self.holding == None):
-            return arms + " "
-        elif(isinstance(self.holding, Pizza)):
-            if(self.holding.isBaked()):
-                return arms + Pantry.ingredientStr["pizza"]
-            else:
-                return arms + Pantry.ingredientStr["raw pizza"]
-        elif(self.holding in Pantry.ingredientStr):
-            return arms + Pantry.ingredientStr[self.holding]
-        else:
-            return arms + "*"
+        if(self.justAte):
+            self.resetArms()
+            self.justAte = False
+            return arms
+        return arms + self.stringHolding()
 
     def stringArmsLeft(self, arms):
+        if(self.justAte):
+            self.resetArms()
+            self.justAte = False
+            return arms
+        return self.stringHolding() + arms
+
+    def resetArms(self):
+        if(" -[" in self.arms):
+            self.arms = " -[]-"
+        else:
+            self.arms = " -/\-"
+        self.duckArmsRight = "<(__)"
+        self.duckArmsLeft  =  "(__)>"
+
+    def stringHolding(self):
         if(self.holding == None):
-            return " " + arms
+            return " "
         elif(isinstance(self.holding, Pizza)):
             if(self.holding.isBaked()):
-                return Pantry.ingredientStr["pizza"] + arms
+                return Pantry.ingredientStr["pizza"]
             else:
-                return Pantry.ingredientStr["raw pizza"] + arms
+                return Pantry.ingredientStr["raw pizza"]
         elif(self.holding in Pantry.ingredientStr):
-            return Pantry.ingredientStr[self.holding] + arms
+            return Pantry.ingredientStr[self.holding]
         else:
-            return "*" + arms
+            return "*"
 
     def stringLegs(self):
 
@@ -218,7 +261,14 @@ class Cook:
         return item
 
     def give(self, item):
+
         if(self.holding == None):
+            self.holding = item
+            return True, ""
+        elif(self.holding in Pizza.possibleToppings and item in Pizza.possibleToppings):
+            self.holding = item
+            return True, ""
+        elif(self.holding in Pizza.possibleCheese and item in Pizza.possibleCheese):
             self.holding = item
             return True, ""
         else:
@@ -250,7 +300,15 @@ class Cook:
         if(len(thingsToGet) == 0):
             return False, "Sorry, must be next to an appliance to get things"
         elif(len(thingsToGet) > 1):
-            return False, "Possible things to get: " + str(thingsToGet)
+            item = self.emptyHands()
+            if(item == None):
+                self.give(thingsToGet[0])
+            elif(item in thingsToGet):
+                i = randint(0, (len(thingsToGet) - 1))
+                self.give(thingsToGet[i])
+            else:
+                self.give(item)
+            return True, "Possible things to get: " + str(thingsToGet)
 
         return self.give(thingsToGet[0])
 
@@ -303,9 +361,9 @@ class Cook:
         print("Baking Pizza") #must fix
         oven = self.nextToObject("oven")
         oven.setColor(Color.stove)
-        print(self.kitchen) #must fix
+        #print(self.kitchen) #must fix
         oven.setColor(Color.oven)
-        time.sleep(1)
+        #time.sleep(1)
                 
         self.give(pizza)
         return True, "Pizza baked!"
