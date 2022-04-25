@@ -1,5 +1,7 @@
 import threading
 
+from color import Color
+
 from kitchen import Kitchen
 from cook import Cook
 from order_list import OrderList
@@ -21,8 +23,36 @@ commands = {"w":"moveUp", "s":"moveDown", "a":"moveLeft", "d":"moveRight",\
 #           command: 
 def printGame(player, kitchen, order_list, order_counts):
     board = [""] * (Kitchen.HEIGHT + 1)
+
+    topFive = order_list.topFive()
+    white = Color.whiteBack + "  " + Color.reset
+    black = "  "
+
+    for row in range(kitchen.HEIGHT):
+        for j in range(1, 4):
+            line = ""
+            for col in range(kitchen.WIDTH):
+                space = kitchen.at(row, col) 
+                if(space == None):
+                    #line += "      "
+                    if(j == 0 or j == 2):
+                        #line += white + black + white
+                        line += "      "
+                    else:
+                        #line += black + white + black
+                        line += "      "
+                else:
+                    line += space.line(j)
+            lineNum = (row * 3) + (j - 1)
+            if (lineNum < 5):
+                print(line + topFive[lineNum])
+            else:
+                print(line)
+            
+            
+    # board = [""] * (Kitchen.HEIGHT + 1)
     
-    board[0] = player.inventory()
+    # board[0] = player.inventory()
     
     for i in range(Kitchen.HEIGHT):
         board[i + 1] = kitchen.getRow(i)
@@ -30,13 +60,18 @@ def printGame(player, kitchen, order_list, order_counts):
     
     board[1] += "      Order Queue" + "      Completed Orders: \033[32m{}".format(order_counts[0])
     board[2] += " ---------------------" + " Expired Orders:   \033[91m{}".format(order_counts[1])
+    # for i in range(Kitchen.HEIGHT):
+    #     board[i + 1] = kitchen.getRow(i)
+    
+    # board[1] += "      Order Queue"
+    # board[2] += " ---------------------"
   
-    topFive = order_list.topFive()
-    for i in range(len(topFive)):
-        board[i + 3] += " {}) {}".format(i + 1, topFive[i]) 
+    #topFive = order_list.topFive()
+    #for i in range(len(topFive)):
+    #     board[i + 3] += " {}) {}".format(i + 1, topFive[i]) 
 
-    for i in range(len(board)):
-        print(board[i]) 
+    # for i in range(len(board)):
+    #     print(board[i]) 
 
 
     
@@ -88,6 +123,9 @@ def run(kitchen, player1, order_list):
                             completed_orders += 1
                         else:
                             player1.give(pizza)
+                        else:
+                            None
+                            #orders serve added!
                 else:
                     succ, msg = func()
             else:
@@ -101,6 +139,9 @@ def run(kitchen, player1, order_list):
         printGame(player1, kitchen, order_list, (completed_orders, expired_orders))
 
     game_over.set()
+        
+        #check end game via orderlist?
+        printGame(player1, kitchen, order_list)
 
 def main():
     kitchen = Kitchen()

@@ -4,7 +4,9 @@
   Authors: Dylan Oesch-Emmel
 """
 from order import Order
+from color import Color
 import threading
+import time
 
 class OrderList:
     
@@ -119,16 +121,30 @@ class OrderList:
 
             if string is None:
                 continue
+
             else:
-                topFive.append(string)
+
+                '''Formula -> timestamp + how long it's been waiting 
+                   If it is waiting 20 secs then its green
+                   If it is waiting between 20 and 35 secs then yellow'''
+    
+                if self.queue[i].timestamp + 20 > time.time():
+                    string = Color.GREEN + string + Color.reset
+
+                elif self.queue[i].timestamp + 35 > time.time():
+                    string = Color.YELLOW + string + Color.reset
+                else:
+                    string = Color.RED + string + Color.reset
+            
+            topFive.append(string + "\n")
             
         # if there are not more than 5 orders
         while len(topFive) < 5:
-            topFive.append("Empty")
+            topFive.append("Empty\n")
         
         return topFive
                  
        
-    
+         
 
 
