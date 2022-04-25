@@ -7,7 +7,7 @@ class ThreadsafeCounter:
 
     def __str__(self):
         with self.lock:
-            return self.count
+            return str(self.count)
 
     def add(self, i):
         with self.lock:
