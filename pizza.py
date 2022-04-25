@@ -27,6 +27,8 @@ class Pizza:
                         "green_peppers", "olives", "onions", \
                         "pineapple"} #set
 
+    possibleCheese = {"cheese", "vegan_cheese"} #set
+
     # starts as just a dought
     def __init__(self, sauced = False, cheese = None, \
                        baked = False, toppings = None):
@@ -38,6 +40,7 @@ class Pizza:
         self.sauced   = sauced #bool
         self.cheese   = cheese #string
 
+        self.toppingsPrintOrder = True
         self.secondToLastTopping = None
         self.lastTopping = None #used for anchovie printing
 
@@ -50,6 +53,9 @@ class Pizza:
                (self.sauced == obj.sauced)        and \
                (self.cheese == obj.cheese)
 
+
+    def isBaked(self):
+        return self.baked
     #works!
     def isDough(self):
         return (self.sauced == False) and \
@@ -89,19 +95,15 @@ class Pizza:
         elif(self.sauced == True and self.toppings == set()):
             string += Color.stove + "~~" + Color.reset
         else:
-            iterator = iter(self.toppings)
-            ingredient1 = next(iterator)
-            ingredient2 = ingredient1
-
-            for e in self.toppings:
-                ingredient1 = ingredient2
-                ingredient2 = e
-
-            #if(len(self.toppings) >= 2):
-            #    ingredient = next(iterator)
-            #ingredientStr2 = ingredientStr[ingredient]
-                
-            string += ingredientStr[ingredient1] + ingredientStr[ingredient2]
+            if(self.secondToLastTopping == None):
+                string += ingredientStr[self.lastTopping] + \
+                          ingredientStr[self.lastTopping]
+            elif (self.toppingsPrintOrder):
+                string += ingredientStr[self.secondToLastTopping] + \
+                          ingredientStr[self.lastTopping]
+            else:
+                string += ingredientStr[self.lastTopping] + \
+                          ingredientStr[self.secondToLastTopping]
 
         string += Color.doughStation + ")" + Color.reset #end pizza
         return string
@@ -141,7 +143,10 @@ class Pizza:
             output += "sauced pizza"
 
         if(self.toppings != set()):
-            output += (" " + str(self.toppings))
+            #output += (" " + str(self.toppings))
+            output += "with "
+            for i in self.toppings:
+                output += str(i) + " (" + ingredientStr[i] + "), "
 
         return output
 
@@ -163,6 +168,7 @@ class Pizza:
             print("This topping has already been added to the Pizza")
             return topping
         else:
+            self.toppingsPrintOrder = not self.toppingsPrintOrder
             self.secondToLastTopping = self.lastTopping
             self.lastTopping = topping
             self.toppings.add(topping)
