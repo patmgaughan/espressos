@@ -136,11 +136,11 @@ class OrderList:
                 else:
                     string = Color.RED + string + Color.reset
             
-            topFive.append(string + "\n")
+            topFive.append(string)
             
         # if there are not more than 5 orders
         while len(topFive) < 5:
-            topFive.append("Empty\n")
+            topFive.append("Empty")
         
         return topFive
                  
