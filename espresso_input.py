@@ -4,6 +4,9 @@ import asyncio
 import argparse
 import websockets
 import aioconsole
+import os
+from getkey import getkey, keys
+import time
 
 async def client():
     parser = argparse.ArgumentParser(
@@ -29,13 +32,43 @@ async def client():
         await websocket.send("input")
 
         await websocket.send(input("username: "))
+        os.system("stty -echo")
 
         try:
+            buffer = ""
             while True:
-                cmnd = input()
-                await websocket.send(cmnd)
+                key = getkey()
+
+                if key == keys.UP:
+                    print("up")
+                    await websocket.send("w")
+                    time.sleep(.3)
+                elif key == keys.DOWN:
+                    print("down")
+                    await websocket.send("s")
+                    time.sleep(.3)
+                elif key == keys.LEFT:
+                    print("left")
+                    await websocket.send("a")
+                    time.sleep(.3)
+                elif key == keys.RIGHT:
+                    print("right")
+                    await websocket.send("d")
+                    time.sleep(.3)
+
+                else:  # Handle text characters
+                    if key == "\n":
+                        await websocket.send(buffer)
+                        print(f"\n{buffer}")
+                        buffer = ""
+                    else:
+                        print(key, end="", flush=True)
+                        buffer += key
+
         except EOFError:
             pass
+        finally:
+            os.system("stty echo")
 
 if __name__ == "__main__":
     asyncio.run(client())
