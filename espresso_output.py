@@ -3,7 +3,7 @@
 import asyncio
 import websockets
 import aioconsole
-from pprint import pprint
+import argparse
 
 
 async def client_listener():

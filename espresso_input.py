@@ -4,7 +4,6 @@ import asyncio
 import argparse
 import websockets
 import aioconsole
-from pprint import pprint
 
 async def client():
     parser = argparse.ArgumentParser(
@@ -28,6 +27,9 @@ async def client():
     uri = f"ws://{args.i}:{args.p}"
     async with websockets.connect(uri, ping_interval=None) as websocket:
         await websocket.send("input")
+
+        await websocket.send(input("username: "))
+
         try:
             while True:
                 cmnd = input()

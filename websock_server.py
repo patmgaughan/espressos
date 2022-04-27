@@ -5,14 +5,12 @@ import argparse
 import websockets
 import threading
 import time
-from pprint import pprint
+
 from player_ops import CMND_TO_FUNC
 from order_list import OrderList
 from order_generator import order_generator
 from order import Order
 from threadsafe_counter import ThreadsafeCounter
-
-
 import kitchen
 import cook
 from color import Color
@@ -26,7 +24,6 @@ async def server(kitch, clients, start_pos,
                 game_over, lock, websocket):
 
     type = await websocket.recv()
-    print("received type")
 
     if type == "input":
 
@@ -77,16 +74,10 @@ async def server(kitch, clients, start_pos,
 
     if type == "output":
         clients.append(websocket)
-        for ws in clients:
-            await ws.send(str(kitch))
+        await websocket.send(stringGame(None, kitch, order_list, (completed_orders, expired_orders)))
         while True:
             await asyncio.sleep(1)
 
-    if type == "reprint":
-        while True:
-            await asyncio.sleep(5)
-            for ws in clients:
-                await ws.send(stringGame(player, kitch, order_list, (completed_orders, expired_orders)))
 
 def stringGame(player, kitchen, order_list, order_counts):
     # board = [""] * (kitchen.Kitchen.HEIGHT + 1)
@@ -179,20 +170,15 @@ async def main():
     game_over = threading.Event()
     lock = asyncio.Lock()
 
-    #FIXME: make int immutable
     fun = lambda ws: server(kitch, clients, start_pos, order_list, completed_orders,
                             expired_orders, game_over, lock, ws)
 
-    print("started order thread")
 
     async def run_server():
-        print("running server")
         async with websockets.serve(fun, args.i, args.p, ping_interval=None):
             await asyncio.Future()  # run forever
 
     async def run_orders(clients, expired_orders):
-        print("running orders")
-
         # choose_difficulty(difficulty)
         # Returns:  order rate, the decay rate, and the rate cap
         # Purpose:  Return the difficulty settings for order generation
@@ -201,7 +187,6 @@ async def main():
                 order_rate = 30
                 decay_rate = 0.9
                 rate_cap = 5
-
 
             elif difficulty == "medium":
                 order_rate = 45
@@ -235,8 +220,6 @@ async def main():
 
                 expired_orders.add(order_list.removeExpired())
 
-                # if endgame
-                #     send out game over message and print
 
                 print(stringGame(None, kitch, order_list, (completed_orders, expired_orders)))
 
@@ -244,16 +227,7 @@ async def main():
                     await ws.send(stringGame(None, kitch, order_list, (completed_orders, expired_orders)))
                 await asyncio.sleep(order_rate)
 
-
-    # task1 = asyncio.create_task()
-    # task2 = asyncio.create_task()
-    print("tasks created")
     await asyncio.gather(run_orders(clients, expired_orders), run_server())
-
-
-
-
-
 
 
 if __name__ == "__main__":
