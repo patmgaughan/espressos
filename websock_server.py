@@ -30,11 +30,11 @@ async def server(kitch, clients, start_pos,
 
     if type == "input":
 
-        # TODO: add option to give username
+        username = await websocket.recv()
 
         async with lock:
             pos = start_pos.increment()
-            player = cook.Cook(kitch, pos, pos, "player")
+            player = cook.Cook(kitch, pos, pos, username)
 
         for ws in clients:
             await ws.send(str(kitch))
@@ -53,9 +53,6 @@ async def server(kitch, clients, start_pos,
                 if not func_name:
                     await websocket.send("not a command")
                     continue
-
-                print(f"<<< {func_name}")
-
 
                 func = getattr(player, func_name)
                 # check if game over
@@ -103,7 +100,6 @@ def stringGame(player, kitchen, order_list, order_counts):
 
     for row in range(kitchen.HEIGHT):
         for j in range(1, 4):
-            print(j)
             line = ""
             for col in range(kitchen.WIDTH):
                 space = kitchen.at(row, col)
@@ -163,6 +159,13 @@ async def main():
         default='8765',
         help='port to run server on',
     )
+    parser.add_argument(
+        '-d',
+        type=str,
+        choices=["easy", "medium", "hard"],
+        default="medium",
+        help='difficulty of the game',
+    )
 
     args = parser.parse_args()
 
@@ -214,7 +217,7 @@ async def main():
             return order_rate, decay_rate, rate_cap
 
         while True:
-            order_rate, decay_rate, rate_cap = choose_difficulty("hard")
+            order_rate, decay_rate, rate_cap = choose_difficulty(args.d)
 
             # need start time so build_pizza can create more complex pizzas as
             # game progresses
