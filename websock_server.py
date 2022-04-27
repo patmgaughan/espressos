@@ -21,78 +21,76 @@ from color import Color
 
 
 
-async def server(kitch, clients, start_pos,
+async def server(kitch, output_clients, input_clients, start_pos,
                 order_list, completed_orders, expired_orders,
-                game_over, lock, websocket):
+                game_over, lock, websocket, stop):
 
     type = await websocket.recv()
     print("received type")
+    try:
+        if type == "input":
 
-    if type == "input":
-
-        # TODO: add option to give username
-
-        async with lock:
-            pos = start_pos.increment()
-            player = cook.Cook(kitch, pos, pos, "player")
-
-        for ws in clients:
-            await ws.send(str(kitch))
-
-        while True:
-            resp = await websocket.recv()
+            # TODO: add option to give username
 
             async with lock:
+                pos = start_pos.increment()
+                player = cook.Cook(kitch, pos, pos, "player")
 
-                if (resp.startswith("get_")):
-                    arg1 = resp.replace('get_', '')
-                    resp = "get_"
+            input_clients.append(websocket)
+            while not game_over.is_set():
+                resp = await websocket.recv()
 
-                func_name = CMND_TO_FUNC.get(resp)
+                async with lock:
 
-                if not func_name:
-                    await websocket.send("not a command")
-                    continue
+                    if (resp.startswith("get_")):
+                        arg1 = resp.replace('get_', '')
+                        resp = "get_"
 
-                print(f"<<< {func_name}")
+                    func_name = CMND_TO_FUNC.get(resp)
+
+                    if not func_name:
+                        await websocket.send("not a command")
+                        continue
+
+                    print(f"<<< {func_name}")
 
 
-                func = getattr(player, func_name)
-                # check if game over
-                if resp == "serve":
-                    succ, msg = func()
-                    if succ:
-                        pizza = player.emptyHands()
-                        succ, msg = order_list.fulfillOrder(pizza)
+                    func = getattr(player, func_name)
+                    # check if game over
+                    if resp == "serve":
+                        succ, msg = func()
                         if succ:
-                            completed_orders.increment()
-                        else:
-                            player.give(pizza)
-                elif (resp == "get_"):
-                    succ, msg = func(arg1)
-                else:
-                    func()
+                            pizza = player.emptyHands()
+                            succ, msg = order_list.fulfillOrder(pizza)
+                            if succ:
+                                completed_orders.increment()
+                            else:
+                                player.give(pizza)
+                    elif (resp == "get_"):
+                        succ, msg = func(arg1)
+                    else:
+                        func()
 
 
-                print(stringGame(player, kitch, order_list, (completed_orders, expired_orders)))
-            for ws in clients:
-                await ws.send(stringGame(player, kitch, order_list, (completed_orders, expired_orders)))
+                    print(stringGame(player, kitch, order_list, (completed_orders, expired_orders)))
+                for ws in output_clients:
+                    await ws.send(stringGame(player, kitch, order_list, (completed_orders, expired_orders)))
 
-    if type == "output":
-        clients.append(websocket)
-        for ws in clients:
-            await ws.send(str(kitch))
-        while True:
-            await asyncio.sleep(1)
+        if type == "output":
+            output_clients.append(websocket)
+            while not game_over.is_set():
+                await asyncio.sleep(1)
 
-    if type == "reprint":
-        while True:
-            await asyncio.sleep(5)
-            for ws in clients:
-                await ws.send(stringGame(player, kitch, order_list, (completed_orders, expired_orders)))
+        #Set Future so we can end the server function
+        stop.set_result(0) 
+
+    # Once one coroutine has ended the server, another coroutine may be waiting 
+    # to send data. We must catch this exception to end all other coroutines
+    # that are waiting
+    except websockets.exceptions.ConnectionClosedError:
+        pass
 
 def stringGame(player, kitchen, order_list, order_counts):
-    # board = [""] * (kitchen.Kitchen.HEIGHT + 1)
 
     topFive = order_list.topFive()
     white = Color.whiteBack + "  " + Color.reset
@@ -168,27 +166,27 @@ async def main():
 
     kitch = kitchen.Kitchen()
     kitch.setUp()
-    clients = []
+    output_clients = []
+    input_clients = []
     start_pos = ThreadsafeCounter()
     order_list = OrderList()
     completed_orders = ThreadsafeCounter()
     expired_orders = ThreadsafeCounter()
     game_over = threading.Event()
+    stop = asyncio.Future()
     lock = asyncio.Lock()
 
     #FIXME: make int immutable
-    fun = lambda ws: server(kitch, clients, start_pos, order_list, completed_orders,
-                            expired_orders, game_over, lock, ws)
+    fun = lambda ws: server(kitch, output_clients, input_clients, start_pos, order_list, completed_orders,
+                            expired_orders, game_over, lock, ws, stop)
 
-    print("started order thread")
 
     async def run_server():
-        print("running server")
-        async with websockets.serve(fun, args.i, args.p, ping_interval=None):
-            await asyncio.Future()  # run forever
 
-    async def run_orders(clients, expired_orders):
-        print("running orders")
+        async with websockets.serve(fun, args.i, args.p, ping_interval=None):
+            await stop
+
+    async def run_orders(output_clients, expired_orders, game_over):
 
         # choose_difficulty(difficulty)
         # Returns:  order rate, the decay rate, and the rate cap
@@ -213,39 +211,35 @@ async def main():
 
             return order_rate, decay_rate, rate_cap
 
-        while True:
-            order_rate, decay_rate, rate_cap = choose_difficulty("hard")
+        order_rate, decay_rate, rate_cap = choose_difficulty("hard")
 
             # need start time so build_pizza can create more complex pizzas as
             # game progresses
-            start_time = time.time()
+        start_time = time.time()
 
-            while True:
-                pizza = Order.build_pizza(start_time)
-                order = Order(pizza)
-                order_list.add(order)
+        while not game_over.is_set():
+            pizza = Order.build_pizza(start_time)
+            order = Order(pizza)
+            order_list.add(order)
 
-                # make sure the order_rate does not go below the rate cap
-                order_rate = order_rate * decay_rate
-                if order_rate < rate_cap:
-                    order_rate = rate_cap
+            # make sure the order_rate does not go below the rate cap
+            order_rate = order_rate * decay_rate
+            if order_rate < rate_cap:
+                order_rate = rate_cap
 
-                expired_orders.add(order_list.removeExpired())
+            expired_orders.add(order_list.removeExpired())
 
                 # if endgame
                 #     send out game over message and print
-
-                print(stringGame(None, kitch, order_list, (completed_orders, expired_orders)))
-
-                for ws in clients:
-                    await ws.send(stringGame(None, kitch, order_list, (completed_orders, expired_orders)))
-                await asyncio.sleep(order_rate)
+            if expired_orders > 1:
+                game_over.set()
 
 
-    # task1 = asyncio.create_task()
-    # task2 = asyncio.create_task()
-    print("tasks created")
-    await asyncio.gather(run_orders(clients, expired_orders), run_server())
+            for ws in output_clients:
+                await ws.send(stringGame(None, kitch, order_list, (completed_orders, expired_orders)))
+            await asyncio.sleep(order_rate)
+
+    await asyncio.gather(run_orders(output_clients, expired_orders, game_over), run_server())
 
 
 

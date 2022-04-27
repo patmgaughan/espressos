@@ -32,7 +32,8 @@ async def client():
             while True:
                 cmnd = input()
                 await websocket.send(cmnd)
-        except EOFError:
+        except websockets.exceptions.ConnectionClosedError:
+            print("hit error")
             pass
 
 if __name__ == "__main__":
