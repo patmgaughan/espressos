@@ -2,6 +2,8 @@ import threading
 
 from color import Color
 
+import time
+
 from kitchen import Kitchen
 from cook import Cook
 from order_list import OrderList
@@ -68,16 +70,16 @@ def printGame(player, kitchen, order_list, order_counts):
             
     # board = [""] * (Kitchen.HEIGHT + 1)
     
-    # board[0] = player.inventory()
+    # # board[0] = player.inventory()
     
-    for i in range(Kitchen.HEIGHT):
-        board[i + 1] = kitchen.getRow(i)
-   
-    
-    board[1] += "      Order Queue" + "      Completed Orders: \033[32m{}".format(order_counts[0])
-    board[2] += " ---------------------" + " Expired Orders:   \033[91m{}".format(order_counts[1])
     # for i in range(Kitchen.HEIGHT):
     #     board[i + 1] = kitchen.getRow(i)
+   
+    
+    # board[1] += "      Order Queue" + "      Completed Orders: \033[32m{}".format(order_counts[0])
+    # board[2] += " ---------------------" + " Expired Orders:   \033[91m{}".format(order_counts[1])
+    # # for i in range(Kitchen.HEIGHT):
+    # #     board[i + 1] = kitchen.getRow(i)
     
     # board[1] += "      Order Queue"
     # board[2] += " ---------------------"
@@ -142,9 +144,9 @@ def run(kitchen, player1, order_list):
                             completed_orders += 1
                         else:
                             player1.give(pizza)
-                        else:
-                            None
-                            #orders serve added!
+                    else:
+                        None
+                        #orders serve added!
                 else:
                     succ, msg = func()
             else:
@@ -159,8 +161,8 @@ def run(kitchen, player1, order_list):
 
     game_over.set()
         
-        #check end game via orderlist?
-        printGame(player1, kitchen, order_list)
+    #check end game via orderlist?
+    printGame(player1, kitchen, order_list)
 
 def main():
     kitchen = Kitchen()
@@ -173,8 +175,87 @@ def main():
     #run game
     run(kitchen, player1, order_list)
 
-if __name__=="__main__":
-    main()
+
+def openingSeq():
+    #an array of string of some size that is empty
+
+    l1 = "___________                                                  /\      "
+    l2 = "\_   _____/ ___________________   ____   ______ __________   )/______"
+    l3 = " |    __)_ /  ___/\____ \_  __ \_/ __ \ /  ___//  ___/  _ \   /  ___/"
+    l4 = " |        \\\___ \ |  |_> >  | \/\  ___/ \___ \ \___ (  <_> )  \___ \ "
+    l5 = "/_______  /____  >|   __/|__|    \___  >____  >____  >____/  /____  >"
+    l6 = "        \/     \/ |__|               \/     \/     \/             \/ "
+
+    x1 = "___________                                           "
+    x2 = "\_   _____/__  ________________   ____   ______ ______"
+    x3 = " |    __)_\  \/  /\____ \_  __ \_/ __ \ /  ___//  ___/"
+    x4 = " |        \>    < |  |_> >  | \/\  ___/ \___ \ \___ \ "
+    x5 = "/_______  /__/\_ \|   __/|__|    \___  >____  >____  >"
+    x6 = "        \/      \/|__|               \/     \/     \/ "
+
+    leftOfExpressos = 10
+    rightOfExpressos = 10
+
+    screenLength = leftOfExpressos + rightOfExpressos + len(l1)
+    personLength = 5
+
+    expressPadding = (screenLength - len(x1)) // 2
+
+    c1 = " MmmM "
+    cx = " |  | "
+    c2 = " |__| "
+    c3 = " (oo) "
+    c4 = " -[]- "
+
+    standingLegs = "  ||  "
+    walkingLegs  = "  /|  "
+    c5 = standingLegs
+
+    sleepSpeed = 0.2
+
+    for i in range(0, screenLength + personLength):
+        print((" " * leftOfExpressos) + l1 + (" " * rightOfExpressos))
+        print((" " * leftOfExpressos) + l2 + (" " * rightOfExpressos))
+        print((" " * leftOfExpressos) + l3 + (" " * rightOfExpressos))
+        print((" " * leftOfExpressos) + l4 + (" " * rightOfExpressos))
+        print((" " * leftOfExpressos) + l5 + (" " * rightOfExpressos))
+        print((" " * leftOfExpressos) + l6 + (" " * rightOfExpressos))
+
+        if(i >= (screenLength / 3)):
+            if(sleepSpeed == 1):
+                sleepSpeed = 0.05
+            if(sleepSpeed == 0.2):
+                sleepSpeed = 1
+            
+            print((" " * expressPadding) + x1 + (" " * expressPadding))
+            print((" " * expressPadding) + x2 + (" " * expressPadding))
+            print((" " * expressPadding) + x3 + (" " * expressPadding))
+            print((" " * expressPadding) + x4 + (" " * expressPadding))
+            print((" " * expressPadding) + x5 + (" " * expressPadding))
+            print((" " * expressPadding) + x6 + (" " * expressPadding)) 
+        else:
+            for j in range(0, 6):
+                print(" " * screenLength)
+        print(" " * i + c1)
+        print(" " * i + cx)
+        print(" " * i + c2)
+        print(" " * i + c3)
+        print(" " * i + c4)
+        print(" " * i + c5)
+
+        time.sleep(sleepSpeed)
+
+
+    # c1 = " MmmM "
+    # c2 = " |__| "
+    # c3 = " (oo) "
+    # c4 = " -/\- "
+    # c5 = "  ||  "
+
+openingSeq()
+# if __name__=="__main__":
+#     main()
+    
 
 
 
