@@ -67,6 +67,8 @@ async def client():
 
         except EOFError:
             pass
+        except websockets.exceptions.ConnectionClosedError:
+            print("hit error")
         finally:
             os.system("stty echo")
 
