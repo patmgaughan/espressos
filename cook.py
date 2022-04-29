@@ -202,21 +202,34 @@ class Cook:
             #only change walking when not wearing hat
             return self.stringLegs()
 
+ 
+
     def stringArms(self, arms):
-        if(self.justAte):
-            self.resetArms()
-            self.justAte = False
+        if(len(arms) == 5): 
+            return arms + self.stringHolding()
+        else:
             return arms
-        return arms + self.stringHolding()
+        # if(self.justAte):
+        #     #self.resetArms()
+        #     #self.justAte = False
+        #     return arms
+        # return arms + self.stringHolding()
 
     def stringArmsLeft(self, arms):
-        if(self.justAte):
-            self.resetArms()
-            self.justAte = False
-            return arms
-        return self.stringHolding() + arms
 
+        if(len(arms) == 5): 
+            return self.stringHolding() + arms
+        else:
+            return arms
+        # if(self.justAte):
+        #     #self.resetArms()
+        #     #self.justAte = False
+        #     return arms
+        # return self.stringHolding() + arms
+
+    #digest
     def resetArms(self):
+        self.justAte = False
         if(" -[" in self.arms):
             self.arms = " -[]-"
         else:
@@ -268,6 +281,7 @@ class Cook:
         return item
 
     def give(self, item):
+        self.resetArms()
 
         if(self.holding == None):
             self.holding = item
@@ -287,6 +301,7 @@ class Cook:
         return self.name() + " holds " + str(self.holding)
 
     def get_(self, ingredient):
+        self.resetArms()
         if(not (ingredient in Pantry.pantry)):
             return False, "Ingredient \"" + ingredient + "\" unknown: try \"-h\""
         if(not self.nextTo(Pantry.pantry[ingredient])):
@@ -297,6 +312,7 @@ class Cook:
 
     #this can now make use of limitLessApplinces
     def commandGet(self):
+        self.resetArms()
         thingsToGet = []
         #lets see if we can get anything!
         appliances = self.nextToAnyObject()
@@ -338,6 +354,7 @@ class Cook:
 
 
     def commandTake(self):
+        self.resetArms()
         if(not self.nextTo(WorkStation)):
             return False, "Error not next to workstation"
 
@@ -449,6 +466,8 @@ class Cook:
             #end change look
             return False, ""
 
+        #we will be moving
+        self.resetArms()
         self.kitchen.remove(self.row, self.col) 
         self.row = row
         self.col = col

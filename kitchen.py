@@ -37,7 +37,11 @@ class Kitchen:
         self.floor[row][col] = None
 
     def isEmpty(self, row, col):
-        return self.floor[row][col] == None
+        if(self.outOfBounds(row, col)):
+            return True
+        if self.floor[row][col] != None:
+            return False
+        return True
 
     def outOfBounds(self, row, col):
         if(row >= Kitchen.HEIGHT):
