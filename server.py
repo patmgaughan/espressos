@@ -26,7 +26,7 @@ GAME = {}
 def stringGame(players, kitchen, order_list, order_counts):
 
     topFive = order_list.topFive()
-    gamestring = ""
+    gamestring = "\n"
 
     for lineNum in range(0, kitchen.totalLines()):
         line = kitchen.getLine(lineNum)
@@ -48,60 +48,6 @@ def stringGame(players, kitchen, order_list, order_counts):
             gamestring += line + "\n"
 
     return gamestring
-#
-# def stringGame(player, kitchen, order_list, order_counts):
-#
-#     topFive = order_list.topFive()
-#     white = Color.whiteBack + "  " + Color.reset
-#     black = "  "
-#
-#     gamestring = ""
-#
-#     for row in range(kitchen.HEIGHT):
-#         for j in range(1, 4):
-#             #print(j)
-#             line = ""
-#             for col in range(kitchen.WIDTH):
-#                 space = kitchen.at(row, col)
-#                 if (space == None):
-#                     # line += "      "
-#                     if (j == 0 or j == 2):
-#                         # line += white + black + white
-#                         line += "      "
-#                     else:
-#                         # line += black + white + black
-#                         line += "      "
-#                 else:
-#                     line += space.line(j)
-#             lineNum = (row * 3) + (j - 1)
-#             linesBefore = 4
-#             if (lineNum == 0):
-#
-#                 if player:
-#                     #print(line + player.inventory())
-#                     gamestring += line + player.inventory() + "\n"
-#                 else:
-#                     #print(line)
-#                     gamestring += line + "\n"
-#             elif (lineNum == 1):
-#                 #print(line + " ---------------------")
-#                 gamestring += line + " ---------------------" + "\n"
-#             elif (lineNum == 2):
-#                 #print(line + "      Order Queue")
-#                 gamestring += line + "      Order Queue\n" #+ "      Completed Orders: \033[32m{}".format(order_counts[0]) + "\n"
-#             elif (lineNum == 3):
-#                 #print(line + " ---------------------") # + "\n" # " " Expired Orders:   \033[91m{}".format(order_counts[1])
-#                 gamestring += line + " ---------------------" + "\n" # Expired Orders:   \033[91m{}".format(order_counts[1]) + "\n"
-#             elif ((lineNum - linesBefore) < 5) and ((lineNum - linesBefore) >= 0):
-#                 #print(line + str(lineNum-linesBefore+1) + ") "+ topFive[lineNum - linesBefore])
-#                 gamestring += line + str(lineNum - linesBefore + 1) + ") " + topFive[lineNum - linesBefore] + "\n"
-#             else:
-#                 #print(line)
-#                 gamestring += line + "\n"
-#
-#     return gamestring
-
-
 
 # choose_difficulty(difficulty)
 # Returns:  order rate, the decay rate, and the rate cap
@@ -188,7 +134,7 @@ async def input_handler(websocket, start):
     username = await websocket.recv()
 
     async with GAME['lock']:
-        pos = GAME['start_position'].increment()
+        pos = GAME['start_position'].get()
         player = cook.Cook(GAME['kitchen'], pos, pos, username)
         GAME['players'].append(player)
 
@@ -302,7 +248,9 @@ async def handler(websocket, start, stop):
     await task
     print("awaiting both tasks")
 
-    stop.set()
+    CONNECTIONS -= 1
+    if CONNECTIONS == 0:
+        stop.set()
 
 
 async def main():
