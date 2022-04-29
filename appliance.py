@@ -419,6 +419,10 @@ class Tank(limitLessAppliance):
         self.l2 = "║ >o ║"
         self.l3 = "╚════╝"
 
+        # self.l1 = "║~~~~~~~~~~║"
+        # self.l2 = "║ >o O< >o ║"
+        # self.l3 = "╚══════════╝"
+
         
 
     
