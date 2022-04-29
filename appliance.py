@@ -142,6 +142,10 @@ class WorkStation(Appliance):
         self.l2 = "|    |"
         self.l3 = "+----+"
 
+        # self.l1 = "╔════╗"
+        # self.l2 = "║    ║"
+        # self.l3 = "╚════╝"
+
     #holding is always a pizza, this should be the job of a pizza!
     def __str__(self):
         if(self.pizza != None):
@@ -262,6 +266,10 @@ class Oven(Appliance):
         self.l2 = "|oven|"
         self.l3 = "|____|"
 
+        # self.l1 = "╔****╗"
+        # self.l2 = "║oven║"
+        # self.l3 = "╚════╝"
+
     def line1(self):
 
         string = ""
@@ -288,6 +296,8 @@ class TrashCan(limitLessAppliance):
         # |~~~~|
         # |    |
         # \____/
+        # █
+
         self.l1 = "|~~~~|"
         self.l2 = "|    |"
         self.l3 = "\\____/"
@@ -309,6 +319,10 @@ class DoughStation(limitLessAppliance):
         self.l1 = "|*  *|"
         self.l2 = "|____|"
         self.l3 = " /  \ "
+
+        # self.l1 = "║*  *║"
+        # self.l2 = "╚╦══╦╝"
+        # self.l3 = " ║  ║ "
 
     def line1(self):
         return self.color + "|" + Color.YELLOW + "*  *" + self.color + "|" + Color.reset
@@ -397,9 +411,15 @@ class Tank(limitLessAppliance):
         # self.l1 = ">o >0 "
         # self.l2 = " >o >o"
         # self.l3 = ">0 >o "
-        self.l1 = "+~~~~+"
-        self.l2 = "| >o |"
-        self.l3 = "|____|"
+        # self.l1 = "+~~~~+"
+        # self.l2 = "| >o |"
+        # self.l3 = "|____|"
+
+        self.l1 = "║~~~~║"
+        self.l2 = "║ >o ║"
+        self.l3 = "╚════╝"
+
+        
 
     
     def line1(self):
@@ -424,5 +444,48 @@ class Fridge(limitLessAppliance):
         self.l2 = "|  . |"
         self.l3 = "|    |"
 
+        # self.l1 = "╔══╦═╗"
+        # self.l2 = "╠══╬═╣"
+        # self.l3 = "╚══╩═╝"
+
+        # self.l1 = "╔═╦╦═╗"
+        # self.l2 = "╠═╬╬═╣"
+        # self.l3 = "╚═╩╩═╝"
+
+        # self.l1 = "╔═╗╦═╗"
+        # self.l2 = "╠═╬╬═╣"
+        # self.l3 = "╚═╩╩═╝"
+
+        
+
     def name(self):
         return "fridge"
+
+esBold = [" "] * 6
+esBold[0] = "███████╗░██████╗██████╗░██████╗░███████╗░██████╗░██████╗░█████╗░██╗░██████╗" + " " * 10
+esBold[1] = "██╔════╝██╔════╝██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝██╔══██╗╚█║██╔════╝" + " " * 10
+esBold[2] = "█████╗░░╚█████╗░██████╔╝██████╔╝█████╗░░╚█████╗░╚█████╗░██║░░██║░╚╝╚█████╗░" + " " * 10
+esBold[3] = "██╔══╝░░░╚═══██╗██╔═══╝░██╔══██╗██╔══╝░░░╚═══██╗░╚═══██╗██║░░██║░░░░╚═══██╗" + " " * 10
+esBold[4] = "███████╗██████╔╝██║░░░░░██║░░██║███████╗██████╔╝██████╔╝╚█████╔╝░░░██████╔╝" + " " * 10
+esBold[5] = "╚══════╝╚═════╝░╚═╝░░░░░╚═╝░░╚═╝╚══════╝╚═════╝░╚═════╝░░╚════╝░░░░╚═════╝░" + " " * 10
+
+class Express(Appliance):
+    def __init__(self, top="top", index=0):
+        super().__init__()
+        self.shape = "]"
+        self.color = Color.WHITE
+
+        l1Index = 0
+        l2Index = 1
+        l3Index = 2
+        if(top != "top"):
+            l1Index = 3
+            l2Index = 4
+            l3Index = 5
+
+        start = index * 6
+        end   = start + 6
+
+        self.l1 = (esBold[l1Index])[start:end]
+        self.l2 = (esBold[l2Index])[start:end]
+        self.l3 = (esBold[l3Index])[start:end]
