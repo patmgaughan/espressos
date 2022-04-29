@@ -9,6 +9,7 @@ from cook import Cook
 from order_list import OrderList
 from order_generator import order_generator
 
+
 commands = {"w":"moveUp", "s":"moveDown", "a":"moveLeft", "d":"moveRight",\
             "get":"commandGet", "put":"commandPut", "take":"commandTake", \
             "trash":"commandTrash", "bake":"commandBake", "serve":"commandServe", \

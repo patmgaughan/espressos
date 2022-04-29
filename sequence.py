@@ -385,7 +385,7 @@ def closingSeq(ordersDone, ordersExpired):
                 c3 = " (xx) "
 
             if(frame == frameC1 + framsToFad + 4):
-                msg = "I'm so embarrsed"
+                msg = "I'm so embarrassed"
                 screenLengthMsg = screenLength
                 msgLen = len(msg)
 

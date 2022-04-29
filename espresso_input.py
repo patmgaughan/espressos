@@ -10,6 +10,7 @@ import sys
 import select
 from getkey import getkey, keys
 import time
+from sequence import *
 
 async def client():
     parser = argparse.ArgumentParser(
@@ -47,20 +48,26 @@ async def client():
             [consumer_task, producer_task],
             return_when=asyncio.FIRST_COMPLETED,
         )
+        print("returned")
+        producer_task.cancel()
+
 
 
 async def receiver(websocket, buffer):
     print("ready to receive")
     async for message in websocket:
-        print(message + f"\n{''.join(buffer)}", end="", flush=True)
+        if message == "gameover":
+            counts = await websocket.recv()
+            counts = counts.split(",")
+            await websocket.send("gameover")
+            closingSeq(counts[0], counts[1])
+            break
+        if message == "start":
+            print("starting seq")
+            openingSeq()
+        else:
+            print(message + f"\n{''.join(buffer)}", end="", flush=True)
 
-async def async_getkey():
-  while True:
-    await asyncio.sleep(0.1)
-    print("waiting t or")
-    while sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
-        ch = sys.stdin.read(1)
-        print('none block input char', ch)
 
 async def producer(websocket, buffer):
     async def do():
@@ -91,6 +98,9 @@ async def producer(websocket, buffer):
                         buffer.clear()
                         await websocket.send(temp)
                         print(f"\n{''.join(temp)}", flush=True, end="")
+                    elif key == keys.BACKSPACE:
+                        buffer.pop(-1)
+                        print("\b \b", end="", flush=True)
                     else:
                         print(key, end="", flush=True)
                         buffer.append(key)
@@ -108,7 +118,7 @@ async def producer(websocket, buffer):
         loop.run_until_complete(do())
         loop.close()
 
-    thread = threading.Thread(target=between_callback)
+    thread = threading.Thread(target=between_callback, daemon=True)
     thread.start()
 
     while True:
