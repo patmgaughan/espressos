@@ -22,8 +22,17 @@ class Cook:
         self.reset = "\033[00m"
         self.count = 0
         self.up = True
+
         self.hat = False
+        j = randint(0, 2)
+        if(j == 2):
+            self.hat = True
+
         self.duck = False
+        j = randint(0, 5)
+        if(j == 5):
+            self.duck = True
+
         self.right = True
         self.justAte = False
 
@@ -65,7 +74,11 @@ class Cook:
 
         self.chefsHat = " MmmM "
         self.head     = " (oo) "
+        i = randint(0, 1)
         self.arms     = " -[]-"
+        if(i == 1):
+            self.arms = " -/\-"
+
         self.feet     = "  ||  "
 
         #self.hat  = " qmmp "
