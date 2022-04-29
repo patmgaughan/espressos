@@ -97,7 +97,7 @@ async def producer(websocket, buffer):
                         temp = [c for c in buffer]
                         buffer.clear()
                         await websocket.send(temp)
-                        print(f"\n{''.join(temp)}", flush=True, end="")
+                        # print(f"\n{''.join(temp)}", flush=True, end="")
                     elif key == keys.BACKSPACE:
                         buffer.pop(-1)
                         print("\b \b", end="", flush=True)
