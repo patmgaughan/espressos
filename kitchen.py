@@ -2,8 +2,9 @@ from appliance import *
 
 
 class Kitchen:
-    WIDTH  = 8
+    WIDTH  = 8 # i think I might want this to change
     HEIGHT = 7
+    TOTAL_HEIGHT = HEIGHT * 3
 
     def __str__(self):
         result = ""
@@ -17,12 +18,16 @@ class Kitchen:
         result += "--------------"
         return result
 
-    def __init__(self):
-        self.floor = [[None for i in range(Kitchen.WIDTH)] \
+    def __init__(self, width=WIDTH):
+        self.width = width
+
+        self.floor = [[None for i in range(self.width)] \
                       for i in range(Kitchen.HEIGHT)]
         self.player1 = None #remove reference to player
 
     def put(self, obj, row, col):
+        if(self.outOfBounds(row, col)):
+            return
         self.floor[row][col] = obj
 
     def at(self, row, col):
@@ -39,11 +44,36 @@ class Kitchen:
             return True
         elif(row < 0):
             return True
-        elif(col >= Kitchen.WIDTH):
+        elif(col >= self.width):
             return True
         elif(col < 0):
             return True
         return False
+
+    def totalLines(self):
+        return Kitchen.HEIGHT * 3
+
+    def getLine(self, lineNum):
+        row = lineNum // 3
+        j   = lineNum % 3 + 1
+    
+        line = ""
+        for col in range(self.width):
+            space = self.at(row, col) 
+            if(space == None):
+                #line += "      "
+                if(j == 0 or j == 2):
+                    #line += white + black + white
+                    line += "      "
+                    #line += "░░░░░░"
+                else:
+                    #line += black + white + black
+                    line += "      "
+                    #line += "░░░░░░"
+            else:
+                line += space.line(j)
+        
+        return line
 
     def isA(self, item, row, col):
         if(self.outOfBounds(row, col)):
@@ -61,6 +91,25 @@ class Kitchen:
             return False
         elif(isinstance(self.floor[row][col], clazz)):
             return True
+
+    def setUpWaitingRoom(self):
+        # self.put(WorkStation(), 0, 0)
+        # self.put(WorkStation(), 0, 1)
+        # self.put(WorkStation(), 0, 2)
+        # self.put(WorkStation(), 0, 3)
+        # self.put(WorkStation(), 0, 4)
+
+        # self.put(DoughStation(), 6, 0)
+        # self.put(Fridge(), 6, 1)
+
+        for i in range(0, 13):
+            self.put(Express("top", i), 2, 4 + i)
+            self.put(Express("bottom", i), 3, 4 + i)
+
+    def printKitchen(self):
+        for lineNum in range(0, self.totalLines()):
+            line = self.getLine(lineNum)
+            print(line)
 
     def setUp(self):
 

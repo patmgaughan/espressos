@@ -96,6 +96,13 @@ class Cook:
     def __str__(self):
         return Color.chef + "*" + "\033[00m"
 
+    def changeKitchen(self, kitchen, row, col):
+        self.kitchen = kitchen
+        self.row = row
+        self.col = col
+        self.kitchen.put(self, row, col) #puts self into kitchen
+        self.kitchen.player1 = self
+
     def mileyCyrus(self):
         self.head          = " (" + Color.CYAN + "oo" + Color.reset + ") "
         self.duckHeadRight = "  (" + Color.CYAN + "o" + Color.reset + "> "
