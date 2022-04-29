@@ -150,7 +150,7 @@ async def run_orders():
         GAME['expired'].add(GAME['order_list'].removeExpired())
 
         print(GAME['expired'].get())
-        if GAME['expired'].get() > 0:
+        if GAME['expired'].get() > 5:
             print("GAMEOVER")
             GAME['game_over'].set()
             for ws in GAME['clients']:

@@ -93,7 +93,7 @@ async def producer(websocket, buffer):
                     await asyncio.sleep(.3)
 
                 else:  # Handle text characters
-                    if key == "\n":
+                    if key == keys.ENTER:
                         temp = [c for c in buffer]
                         buffer.clear()
                         await websocket.send(temp)
