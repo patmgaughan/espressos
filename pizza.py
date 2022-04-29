@@ -144,7 +144,7 @@ class Pizza:
 
         if(self.toppings != set()):
             #output += (" " + str(self.toppings))
-            output += "with "
+            output += Color.reset + "with "
             for i in self.toppings:
                 output += str(i) + " (" + ingredientStr[i] + "), "
 
