@@ -127,7 +127,7 @@ async def run_orders():
     if GAME['expired']> 1:
         game_over.set()
 
-    for ws in GAME['output_clients']:
+    for ws in GAME['clients']:
         await ws.send(stringGame(None, kitch, order_list, (completed_orders, expired_orders)))
 
     await asyncio.sleep(order_rate)
@@ -137,7 +137,7 @@ async def run_orders():
 async def output_handler(websocket, start):
     global GAME
     await start.wait()
-    for ws in GAME['output_clients']:
+    for ws in GAME['clients']:
             await ws.send(stringGame(player, GAME['kitchen'], GAME['order_list'], (GAME['completed'], GAME['expired'])))
 
     GAME['output_clients'].append(websocket)
@@ -154,7 +154,7 @@ async def input_handler(websocket, start):
         pos = GAME['start_position'].increment()
         player = cook.Cook(GAME['kitchen'], pos, pos, "player")
 
-    GAME['input_clients'].append(websocket)
+    GAME['clients'].append(websocket)
 
     while not GAME['game_over'].is_set():
         resp = await websocket.recv()
@@ -190,7 +190,7 @@ async def input_handler(websocket, start):
             else:
                 func()
 
-        for ws in GAME['output_clients']:
+        for ws in GAME['clients']:
             await ws.send(stringGame(player, GAME['kitchen'], GAME['order_list'], (GAME['completed'], GAME['expired'])))
 
 
@@ -206,18 +206,18 @@ async def handler(websocket, start, stop):
     print(f"type is {type}")
  
     CONNECTIONS += 1 
-    
+   
+    order_task = None 
+    task = None
     print(f"Connections: {CONNECTIONS}")
     if CONNECTIONS == 2:
         print("Setting up game")
         kitch = kitchen.Kitchen()
         kitch.setUp()
         GAME['kitchen'] = kitch
-
-        output_clients = []
-        input_clients = []
-        GAME['output_clients'] = output_clients
-        GAME['input_clients'] = input_clients
+        
+        clients = []
+        GAME['clients'] = clients
     
         start_pos = ThreadsafeCounter()
         GAME['start_position'] = start_pos
@@ -235,18 +235,21 @@ async def handler(websocket, start, stop):
         
         lock = asyncio.Lock()
         GAME['lock'] = lock
-        
+       
+        order_task = aysncio.create_task(run_orders()) 
         start.set()
         
 
  
     if type == "input":
         task = asyncio.create_task(input_handler(websocket, start))    
-        await task
     elif type == "output":
         task = asyncio.create_task(output_handler(websocket, start))    
-        await task
 
+    if order_task is not None:
+        await order_task
+
+    await task
 
     STOP.set()
 
