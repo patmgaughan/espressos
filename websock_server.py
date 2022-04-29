@@ -56,6 +56,10 @@ async def input_handler(completed_orders, expired_orders, game_over,
     pos = start_pos.increment()
     player = cook.Cook(kitch, pos, pos, username)
     input_clients.append(websocket)
+    output_clients.append(websocket)
+
+    await print_and_send_game(completed_orders, expired_orders, kitch,
+                              order_list, output_clients, None)
 
     while not game_over.is_set():
         resp = await websocket.recv()
