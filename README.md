@@ -65,8 +65,18 @@ must be near the counter.
                kitchen.py as players build pizzas. Also used by 
                server.py because pizzas are needed to create an order 
                instance.
-<code> server.py </code> --> TODO JACKSON
-<code> client.py </code> --> TODO JACKSON
+<code> server.py </code> 
+           --> A module containing distributed espresso's 
+               express server code. Gets updates about
+               orders and commands from clients. Executes
+               all the game commands that are given and sents
+               out a new version of the game state to
+               all players when updates arrive
+<code> client.py </code> 
+           --> A module containing distributed espresso's 
+               express client code. The client is given 
+               a string that represents the game and enters
+               commands to interact in the game
 <code> cook.py </code>
            --> Definition of a cook. They mainly move by their
                command functions being run. They can move around the
@@ -84,11 +94,14 @@ must be near the counter.
                which limitless appliances hold which ingredients 
                as well as ascii printable representations of
                ingredients
-<code> player_ops.py </code> --> TODO JACKSON
+<code> player_ops.py </code> 
+           --> A module containing the commands and the names of their
+               corresponding functions
 <code> sequence.py </code>
            --> Holds the definition of openingSeq() and closingSeq()
                which print ascii animations of an opening sequence
                and a closing sequence for the begining and end
                of the game
-<code> threadsafe_counter.py </code> --> TODO JACKSON
+<code> threadsafe_counter.py </code> 
+           --> a threadsafe counter class
 
