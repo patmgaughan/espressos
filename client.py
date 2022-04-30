@@ -3,58 +3,64 @@
 import asyncio
 import argparse
 import websockets
-import aioconsole
 import threading
 import os
 import sys
-import select
 from getkey import getkey, keys
 import time
 from sequence import *
 
+
 async def client():
-    parser = argparse.ArgumentParser(
-        description='Performs some useful work.',
-    )
+    """
+    parse command line arguments, then connect to server websocket
+    """
+    parser = argparse.ArgumentParser()
     parser.add_argument(
-        '-i',
+        '--ip', '-i',
         type=str,
         default='localhost',
-        help='ip to run server on',
+        help='ip to connect to server on',
     )
     parser.add_argument(
-        '-p',
+        '--port', '-p',
         type=str,
         default='8765',
-        help='port to run server on',
+        help='port to connect to server on',
     )
 
     args = parser.parse_args()
 
-    uri = f"ws://{args.i}:{args.p}"
-    async with websockets.connect(uri, ping_interval=None) as websocket:
-        await websocket.send("input")
-        buffer = []
-        producer_wrapper = lambda ws: producer(ws, buffer)
-        receiver_wrapper = lambda ws: receiver(ws, buffer)
+    uri = f"ws://{args.ip}:{args.port}"
 
+    async with websockets.connect(uri, ping_interval=None) as websocket:
+        #await websocket.send("input")
+        buffer = []
+
+        async def producer_wrapper(ws):
+            await message_producer(ws, buffer)
+
+        async def receiver_wrapper(ws):
+            await message_receiver(ws, buffer)
+
+        # run producer and consumer until one returns
         consumer_task = asyncio.ensure_future(
             receiver_wrapper(websocket))
-        print("consuming")
         producer_task = asyncio.ensure_future(
             producer_wrapper(websocket))
-        print("producing")
-        done, pending = await asyncio.wait(
+        await asyncio.wait(
             [consumer_task, producer_task],
-            return_when=asyncio.FIRST_COMPLETED,
-        )
-        print("returned")
+            return_when=asyncio.FIRST_COMPLETED)
+
+        # cancel outstanding producer task
         producer_task.cancel()
 
 
-
-async def receiver(websocket, buffer):
-    print("ready to receive")
+async def message_receiver(websocket, buffer):
+    """
+    asynchronous function for receiving game state from server and playing
+    start and stop animations
+    """
     async for message in websocket:
         if message == "gameover":
             counts = await websocket.recv()
@@ -66,17 +72,25 @@ async def receiver(websocket, buffer):
             print("starting seq")
             openingSeq()
         else:
-            print(message + f"\n{''.join(buffer)}", end="", flush=True)
+            print(f"\n{message}\n{''.join(buffer)}", end="", flush=True)
 
 
-async def producer(websocket, buffer):
-    async def do():
+async def message_producer(websocket, buffer):
+    """
+    asynchronous function for receiving input from the keyboard and sending it
+    to the server as commands
+    this function runs get_input as a coroutine to allow for asynchronous
+    keypress detection
+    """
+    async def get_input():
+        """
+        continuously detect keypresses until killed
+        """
         await websocket.send(input("username: "))
         os.system("stty -echo")
         print("here")
         try:
             while True:
-
                 key = getkey()
 
                 if key == keys.UP:
@@ -97,7 +111,6 @@ async def producer(websocket, buffer):
                         temp = [c for c in buffer]
                         buffer.clear()
                         await websocket.send(temp)
-                        # print(f"\n{''.join(temp)}", flush=True, end="")
                     elif key == keys.BACKSPACE:
                         buffer.pop(-1)
                         print("\b \b", end="", flush=True)
@@ -112,18 +125,22 @@ async def producer(websocket, buffer):
             os.system("stty echo")
 
     def between_callback():
+        """
+        callback function to schedule get_input in separate thread
+        """
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
 
-        loop.run_until_complete(do())
+        loop.run_until_complete(get_input())
         loop.close()
 
+    # run between_callback in new thread
     thread = threading.Thread(target=between_callback, daemon=True)
     thread.start()
 
+    # run until killed
     while True:
         await asyncio.sleep(5)
-
 
 
 if __name__ == "__main__":

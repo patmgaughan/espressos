@@ -18,6 +18,7 @@ class Kitchen:
     # always the total height of a kitchen
     TOTAL_HEIGHT = HEIGHT * 3
 
+
     # def __str__(self):
     #     result = ""
     #     for row in self.floor:
@@ -29,6 +30,20 @@ class Kitchen:
     #         result += "\n"
     #     result += "--------------"
     #     return result
+
+    START_POS = [(0, 6), (0, 7), (1, 0), (1, 1), (1, 2), (1, 3),
+                 (1, 4), (1, 5), (1, 6)]
+    def __str__(self):
+        result = ""
+        for row in self.floor:
+            for obj in row:
+                if(obj == None):
+                    result += "  "
+                else:
+                    result += str(obj) + " "
+            result += "\n"
+        result += "--------------"
+        return result
 
     def __init__(self, width=WIDTH):
         # sets the kitchen width if set
