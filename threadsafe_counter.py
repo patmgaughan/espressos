@@ -1,3 +1,10 @@
+"""
+  threadsafe_counter.py
+  Description: TODO
+
+  Authors: Jackson Clayton
+"""
+
 import threading
 
 class ThreadsafeCounter:

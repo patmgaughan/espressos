@@ -42,20 +42,24 @@ must be near the counter.
 
 PATRICK ADD 
 ## Code guide
-<code> appliance.py </code>
+<code> appliance.py </code> --> appliances are objects that chefs can interact with
+               limitless appliances allow chefs to get various
+               ingredients
 <code> color.py </code> --> Stores the class Color which holds constants for 
 different ANSII character colors. Also holds what each game object's color is.
-<code> kitchen.py </code>
+<code> kitchen.py </code> --> The kitchen acts as a 2D array that holds appliances
+               and players. Control of kitchen mostly comes
+               from chefs
 <code> pizza.py </code> --> the class for the Pizza object which is used by
 kitchen.py as players build pizzas. Also used by server.py because pizzas
 are needed to create an order instance.
-<code> server.py </code> --> 
-<code> client.py </code>
-<code> cook.py </code>
-<code> order_list.py </code>
-<code> order.py </code>
-<code> pantry.py </code>
-<code> player.py </code>
-<code> sequence.py </code>
-<code> threadsafe_counter.py </code>
+<code> server.py </code> --> DYLAN/JACKSON
+<code> client.py </code> -->
+<code> cook.py </code> -->
+<code> order_list.py </code> -->
+<code> order.py </code> -->
+<code> pantry.py </code> -->
+<code> player.py </code> -->
+<code> sequence.py </code> -->
+<code> threadsafe_counter.py </code> -->
 

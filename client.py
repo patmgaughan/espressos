@@ -1,3 +1,9 @@
+"""
+  client.py
+  Description: TODO
+
+  Authors: Jackson Clayton
+"""
 #!/usr/bin/env python
 
 import asyncio
