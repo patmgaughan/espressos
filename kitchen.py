@@ -5,7 +5,8 @@ class Kitchen:
     WIDTH  = 8 # i think I might want this to change
     HEIGHT = 7
     TOTAL_HEIGHT = HEIGHT * 3
-
+    START_POS = [(0, 6), (0, 7), (1, 0), (1, 1), (1, 2), (1, 3),
+                 (1, 4), (1, 5), (1, 6)]
     def __str__(self):
         result = ""
         for row in self.floor:
