@@ -78,27 +78,6 @@ class Pizza:
                (self.cheese == None) and \
                (self.toppings == set())
 
-    # #okay this could have a two version or a 4 string version
-    # def __str__(self):
-    #     shape = "#"
-    #     color = "\033[95m"
-
-    #     if(self.baked):
-    #         shape = "0"
-
-    #     if(self.isDough()):
-    #         color = Color.doughStation
-    #     elif(self.cheese != None and self.toppings == set()):
-    #         color = Color.cheese
-    #     elif(self.sauced == True and self.toppings == set()):
-    #         color = Color.stove
-    #     elif("anchovies" == self.lastTopping):
-    #         color = Color.tank
-    #     else:
-    #         color = Color.topped
-
-    #     return color + shape + Color.reset
-
     # returns the pizza as a string of length 4 in the
     # look of the pizza it represents
     def toStringLength4(self):
@@ -125,22 +104,6 @@ class Pizza:
         string += Color.doughStation + ")" + Color.reset
         return string
 
-    # def color(self):
-    #     color = "\033[95m"
-
-    #     if(self.isDough()):
-    #         color = Color.doughStation
-    #     elif(self.cheese != None and self.toppings == set()):
-    #         color = Color.cheese
-    #     elif(self.sauced == True and self.toppings == set()):
-    #         color = Color.stove
-    #     elif("anchovies" == self.lastTopping):
-    #         color = Color.tank
-    #     else:
-    #         color = Color.topped
-
-    #     return color
-
     # returns the pizza as a string
     def toString(self):
         output = ""
@@ -165,8 +128,8 @@ class Pizza:
 
         return output
 
-    # def name(self):
-    #     return "Pizza"
+    def name(self):
+        return "Pizza"
 
     # takes in the topping as a string
     # an error if the topping is not a possible topping

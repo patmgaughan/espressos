@@ -1,6 +1,9 @@
 """
   cook.py
-  Description: definition of a cook 
+  Description: Definition of a cook. They mainly move by their
+               command functions being run. They can move around the
+               kitchen, get things from appliance, and do all the 
+               things that are needed to create and serve a pizza
 
   Authors: Patrick Gaughan
 """
@@ -61,44 +64,43 @@ class Cook:
         self.line2 = " -[]-"
         self.line3 = "  ||  "
 
-    def __str__(self):
-        return Color.chef + "*" + "\033[00m"
-
-    def changeKitchen(self, kitchen, row, col):
-        self.kitchen = kitchen
-        self.row = row
-        self.col = col
-        self.kitchen.put(self, row, col) #puts self into kitchen
-        self.kitchen.player1 = self
-
+    # changes eyes to be blue
     def mileyCyrus(self):
         self.head          = " (" + Color.CYAN + "oo" + Color.reset + ") "
         self.duckHeadRight = "  (" + Color.CYAN + "o" + Color.reset + "> "
         self.duckHeadLeft  = " >" + Color.CYAN + "o" + Color.reset + ")  "
         return True, "Lovely Eyes"
 
+    # changes eyes back to white
     def noMileyCyrus(self):
         self.head          = " (oo) "
         self.duckHeadRight = "  (o> "
         self.duckHeadLeft  = " >o)  "
         return True, "Lovely Eyes"
 
+    # makes the person wear a dress
     def wearDress(self):
         self.arms = " -/\-"
         return True, "Looking Good!"
 
+    #makes the person wear a shirt
     def wearShirt(self):
         self.arms = " -[]-"
         return True, "Looking Good!"
 
+    # toggels if the person is wearing a hat
     def toggleHat(self):
         self.hat = not self.hat
         return True, "Looking Good!"
 
+    # toggles if the person is a chef
     def toggleDuck(self):
         self.duck = not self.duck
         return True, "Quack Quack"
 
+    # command for player to eat. If they are holding anything
+    # it is removed from their hands and shown to be in their
+    # stomach
     def commandEat(self):
         item = self.emptyHands()
         if(item != None):
@@ -120,6 +122,7 @@ class Cook:
         else:
             return False, "Nothing to Eat!"
 
+    # prints the first line of a cook
     def stringline1(self):
         if(self.duck and self.hat):
             if(self.right):
@@ -137,6 +140,7 @@ class Cook:
         else:
             return self.head
 
+    # prints the 2nd line of a cook
     def stringline2(self):
         if(self.duck and self.hat):
             if(self.right):
@@ -154,6 +158,7 @@ class Cook:
         else:
             return self.stringArms(self.arms)
 
+    # print the 3rd line of a cook
     def stringline3(self):
         if(self.duck and self.hat):
             if(self.right):
@@ -169,14 +174,16 @@ class Cook:
             #only change walking when not wearing hat
             return self.stringLegs()
 
- 
-
+    # returns the string rep of a cook's arms for
+    # people and ducks facing right
     def stringArms(self, arms):
         if(len(arms) == 5): 
             return arms + self.stringHolding()
         else:
             return arms
 
+    # returns the string rep of a cook's arms for
+    # ducks facing left
     def stringArmsLeft(self, arms):
 
         if(len(arms) == 5): 
@@ -185,6 +192,8 @@ class Cook:
             return arms
 
     # remove the food the character ate
+    # by chaning the string that represents
+    # their arm
     def resetArms(self):
         self.justAte = False
         if(" -[" in self.arms):
@@ -194,6 +203,7 @@ class Cook:
         self.duckArmsRight = "<(__)"
         self.duckArmsLeft  =  "(__)>"
 
+    # returns a string of the item the character is holding
     def stringHolding(self):
         if(self.holding == None):
             return " "
@@ -207,6 +217,7 @@ class Cook:
         else:
             return "*"
 
+    # returns string rep of the cook's legs
     def stringLegs(self):
         if(self.count == -1):
             return "  /|  "
@@ -215,8 +226,9 @@ class Cook:
         else:
            return "  |\  " 
 
-        
-
+    # returns one of the third lines that represent
+    # a cook when printing based on the input num
+    # if num isnt 1,2, or 3 it return ""
     def line(self, num):
         string = ""
         if(num == 1):
@@ -228,50 +240,68 @@ class Cook:
 
         return self.color + string + self.reset
 
+    # returns the name of a cook
     def name(self):
         return self.fname
 
+    # emptys the hands of a cook
     def emptyHands(self):
         item = self.holding
         self.holding = None
         return item
 
+    # gives the cook the item listed
+    # this will fail if the cook is already
+    # holding somthing
     def give(self, item):
         self.resetArms()
 
         if(self.holding == None):
             self.holding = item
             return True, ""
-        elif(self.holding in Pizza.possibleToppings and item in Pizza.possibleToppings):
+        elif(self.holding in Pizza.possibleToppings and \
+             item in Pizza.possibleToppings):
             self.holding = item
             return True, ""
-        elif(self.holding in Pizza.possibleCheese and item in Pizza.possibleCheese):
+        elif(self.holding in Pizza.possibleCheese and \
+            item in Pizza.possibleCheese):
             self.holding = item
             return True, ""
         else:
             return False, "My Hands are full!"
     
+    # returns a string that represnts the cook's inventory
     def inventory(self):
         if(isinstance(self.holding, Pizza)):
             return self.name() + " holds " + self.holding.toString()
         return self.name() + " holds " + str(self.holding)
 
     # commands
+    # allows a gook to attempt to get an ingredient from
+    # any appliances that they are next to
+    # the ingredient given is the only possible ingrenident 
+    # the cook can get
     def get_(self, ingredient):
         self.resetArms()
         if(not (ingredient in Pantry.pantry)):
-            return False, "Ingredient \"" + ingredient + "\" unknown: try \"-h\""
+            return False, "Ingredient \"" + ingredient +\
+                           "\" unknown: try \"-h\""
         if(not self.nextTo(Pantry.pantry[ingredient])):
-            return False, "Can't get " + str(ingredient) + ", not standing next to " + \
+            return False, "Can't get " + str(ingredient) +\
+                    ", not standing next to " + \
                    str(Pantry.pantry[ingredient])
 
         return self.give(ingredient)
 
-
+    # command
+    # sees what limitless appliances we are around
+    # if we are around any, then we get a random item
+    # that is contined in the applience.
+    # if this fails, an error message is returned
     def commandGet(self):
         self.resetArms()
         thingsToGet = []
-        #ee if we can get anything
+        # see if we can get anything
         appliances = self.nextToAnyObject()
         for appliance in appliances:
             for ingredient in Pantry.pantry:
@@ -293,6 +323,10 @@ class Cook:
         return self.give(thingsToGet[0])
 
     # command
+    # cook is able to run this command when next to workstation in
+    # the kitchen. If they are holding dough or something that can
+    # be added to the pizza on the workstation then it is added
+    # and removed from cook's hand. Else it is not added to the workstation
     def commandPut(self):
         if(not self.nextTo(WorkStation)):
             return False, "Can't put down item, not next to workstation"
@@ -304,13 +338,17 @@ class Cook:
 
         item = self.emptyHands() 
         #player gets what ever the workstation returns
-        self.holding = workstation.put(item) # put what I was holding at the workstation
+         # put what I was holding at the workstation
+        self.holding = workstation.put(item)
         if(self.holding != None): 
             return False, "Workstation is full"
 
         return True, "" #add workstation is holding
 
     # command
+    # command for a cook to take something from a workstation
+    # if cook is next to a workstation than they pick up
+    # whatever is at that workstation if their hands are empty
     def commandTake(self):
         self.resetArms()
         if(not self.nextTo(WorkStation)):
@@ -327,6 +365,8 @@ class Cook:
         return succ, msg
 
     # command
+    # if the cook is next to an oven and the cook is 
+    # hodling a raw pizza, then the pizza becomes baked
     def commandBake(self):
         if(not self.nextTo(Oven)):
             return False, "Must be next to Oven to bake"
@@ -345,6 +385,8 @@ class Cook:
         return True, "Pizza baked!"
 
     # command
+    # if the cook is next to a trash can then
+    # they throw out the item that they are holding
     def commandTrash(self):
         if(not self.nextTo(TrashCan)):
             return False, "Nothing to throw out"
@@ -353,6 +395,10 @@ class Cook:
         return True, ""
 
     # command
+    # if the cook is next to the counter and holding
+    # a pizza that is on the order list, then the
+    # pizza is removed from the players hand.
+    # else the player keeps the pizza
     def commandServe(self):
         if(not self.nextTo(Counter)):
             return False, "must be next to counter to serve"
@@ -365,7 +411,9 @@ class Cook:
 
         return True, ""
         
-
+    # looks at the four spaces in the kitchen that the cook is next to
+    # and returns true if any of them are have the same class as the 
+    # class given
     def nextTo(self, clazz):
         nextTo = False
         nextTo = nextTo or self.kitchen.isClass(clazz, self.row+1, self.col)
@@ -374,6 +422,9 @@ class Cook:
         nextTo = nextTo or self.kitchen.isClass(clazz, self.row, self.col-1)
         return nextTo
 
+    # looks at the four items that the cook is next to in
+    # the kitchen and returns the first item that is the
+    # same as the item listed
     def nextToObject(self, item):
   
         if(self.kitchen.isA(item, self.row+1, self.col)):
@@ -387,7 +438,7 @@ class Cook:
 
         return None
 
-    #return None if not next to anything
+    # return None if not next to anything
     # otherwise return the array of objects that you are next to
     # within the kitchen
     def nextToAnyObject(self):
@@ -405,7 +456,7 @@ class Cook:
 
         return objects
 
-    # move to the row and col given within
+    # move cook to the row and col given within
     # the kitchen
     def move(self, row, col):
         

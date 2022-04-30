@@ -140,7 +140,8 @@ class WorkStation(Appliance):
             item = None
         elif(item == "cheese" or item == "vegan_cheese"):  
             if(self.pizza.cheese != None):
-                print("Pizza already has cheese, and Espressos is not made of cheese")
+                print("Pizza already has cheese, and \
+                       Espressos is not made of cheese")
                 return item
             self.pizza.cheese = item
             item = None
@@ -233,7 +234,8 @@ class DoughStation(limitLessAppliance):
         self.l3 = " /  \ "
 
     def line1(self):
-        return self.color + "|" + Color.YELLOW + "*  *" + self.color + "|" + Color.reset
+        return self.color + "|" + Color.YELLOW + "*  *" \
+               + self.color + "|" + Color.reset
 
     def name(self):
         return "doughStation"

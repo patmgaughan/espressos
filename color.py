@@ -51,7 +51,6 @@ class Color:
     workStation = PINK
     doughStation = YELLOW
     counter = BLACK
-    #oven = BRIGHT_RED
     oven = BLACK
     trashCan = BLACK
     cheese = WHITE
@@ -61,7 +60,4 @@ class Color:
     topped = GREEN
     tank = CYAN_BACK
     chef = WHITE
-
-    fun2 = CYAN_BACK
-    fun = GREEN_BACK
     whiteBack = WHITE_BACK
