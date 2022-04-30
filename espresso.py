@@ -1,3 +1,9 @@
+"""
+  Depricated
+
+  Authors: Patrick Gaughan
+"""
+
 import threading
 
 from color import Color

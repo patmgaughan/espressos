@@ -1,4 +1,14 @@
-from ast import walk
+"""
+  sequence.py
+  Description: Holds the definition of openingSeq() and closingSeq()
+               which print ascii animations of an opening sequence
+               and a closing sequence for the begining and end
+               of the game
+
+  Authors: Patrick Gaughan
+"""
+
+# from ast import walk
 import time
 from color import Color
 from random import randrange

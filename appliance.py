@@ -1,6 +1,15 @@
+"""
+  appliance.py
+  Description: appliances are objects that chefs can interact with
+               limitless appliances allow chefs to get various
+               ingredients
+
+  Authors: Patrick Gaughan
+"""
 from color import Color
 from pizza import Pizza
 
+# the ascii representation of each ingredient
 ingredientStr = {
         "dough":Color.YELLOW + "*" + Color.reset, 
         "sauce":Color.RED + "~" + Color.reset,
@@ -11,82 +20,14 @@ ingredientStr = {
         #toppings counter
         "ham":Color.PINK + "<" + Color.reset,
         "pineapple":Color.YELLOW + ">" + Color.reset,
-
         "pepperoni":Color.PINK + "o" + Color.reset,
         "olives":Color.GREEN + "%" + Color.reset,
-
         "onions":Color.RED + "&" + Color.reset,
         "green_peppers":Color.GREEN + "{" + Color.reset,
         #end toppings counter
+
         "pizza":Color.YELLOW + "@" + Color.reset
     }
-
-#sorry bout tis
-line1 = "|  |"
-line2 = "|  |"
-line3 = "|  |"
-
-line1 = "|   |"
-line2 = "| + |"
-line3 = "|   |"
-
-line1 = " (  ) "
-line2 = " -[]- "
-line3 = "  /\  "
-
-# lineb1 = "------"
-# lineb2 = "|    |"
-# lineb3 = "------"
-# lineb1 = "+----+"
-# lineb2 = "|    |"
-# lineb3 = "+----+"
-# lineb1 = "/\\/\\/\\"
-# lineb2 = "\\/\\/\\/"
-# lineb3 = "/\\/\\/\\"
-
-# lineb1 = "------"
-# lineb2 = "Dough-"
-# lineb3 = "------"
-
-lineb1 = "[_____]"
-lineb2 = "[   . ]"
-lineb3 = "[     ]"
-
-# linea1 = ">o >0 "
-# linea2 = " >o >o"
-# linea3 = ">0 >o "
-
-# linea1 = "mmmmmm"
-# linea2 = "|    |"
-# linea3 = "\\____/"
-
-# linea1 = "|~~~~|"
-# linea2 = "|    |"
-# linea3 = "\\____/"
-
-# linea1 = "-****-"
-# linea2 = "|oven|"
-# linea3 = "|____|"
-
-# linea1 = " * * *"
-# linea2 = "------"
-# linea3 = "dough|"
-
-# linea1 = "(    )"
-# linea2 = " )  ( "
-# linea3 = "(____)"
-
-# linea1 = "(@)(@)"
-# linea2 = "      "
-# linea3 = "(@)(@)"
-
-linea1 = " \ /  "
-linea2 = "  Y   "
-linea3 = "  |   "
-
-# lineb1 = " #  # "
-# lineb2 = " #  # "
-# lineb3 = " #  # "
 
 class Appliance:
     def __init__(self):
@@ -94,9 +35,6 @@ class Appliance:
         self.color = "\033[00m"
         self.reset = "\033[00m" 
 
-        # lineb1 = "+----+"
-        # lineb2 = "|    |"
-        # lineb3 = "+----+"
         self.l1 = "+----+"
         self.l2 = "|    |"
         self.l3 = "|____|"
@@ -129,7 +67,7 @@ class Appliance:
     def setColor(self, color):
         self.color = color
 
-#appliance
+# appliance
 class WorkStation(Appliance):
 
     def __init__(self):
@@ -142,11 +80,7 @@ class WorkStation(Appliance):
         self.l2 = "|    |"
         self.l3 = "+----+"
 
-        # self.l1 = "╔════╗"
-        # self.l2 = "║    ║"
-        # self.l3 = "╚════╝"
-
-    #holding is always a pizza, this should be the job of a pizza!
+    # holding is always a pizza, this should be the job of a pizza!
     def __str__(self):
         if(self.pizza != None):
             return self.pizza.__str__()
@@ -226,11 +160,7 @@ class Counter(Appliance):
         super().__init__()
         self.shape = "_"
         self.color = Color.counter
-        self.holding = None #i actually dont think it will hold an object...
 
-        # # linea1 = "(    )"
-        # # linea2 = " )  ( "
-        # # linea3 = "(____)"
         self.l1 = "______"
         self.l2 = "[$][$]"
         self.l3 = "^^^^^^"
@@ -251,24 +181,15 @@ class Counter(Appliance):
     def name(self):
         return "counter"
 
-    #later this will maybe keep track of something?
-
 class Oven(Appliance):
     def __init__(self):
         super().__init__()
         self.shape = "@"
         self.color = Color.oven
 
-        # "-****-"
-        # "|oven|"
-        # "|____|"
         self.l1 = "-****-"
         self.l2 = "|oven|"
         self.l3 = "|____|"
-
-        # self.l1 = "╔****╗"
-        # self.l2 = "║oven║"
-        # self.l3 = "╚════╝"
 
     def line1(self):
 
@@ -293,11 +214,6 @@ class TrashCan(limitLessAppliance):
         self.shape = "X"
         self.color = Color.trashCan
 
-        # |~~~~|
-        # |    |
-        # \____/
-        # █
-
         self.l1 = "|~~~~|"
         self.l2 = "|    |"
         self.l3 = "\\____/"
@@ -312,17 +228,9 @@ class DoughStation(limitLessAppliance):
         self.shape = "="
         self.color = Color.BLACK
 
-        # self.l1 = "~~~~~~"
-        # self.l2 = "|____|"
-        # self.l3 = "][ ][ "
-
         self.l1 = "|*  *|"
         self.l2 = "|____|"
         self.l3 = " /  \ "
-
-        # self.l1 = "║*  *║"
-        # self.l2 = "╚╦══╦╝"
-        # self.l3 = " ║  ║ "
 
     def line1(self):
         return self.color + "|" + Color.YELLOW + "*  *" + self.color + "|" + Color.reset
@@ -336,9 +244,6 @@ class Stove(limitLessAppliance):
         self.shape = "%"
         self.color = Color.stove
 
-        # "(@)(@)"
-        # "      "
-        # "(@)(@)"
         self.l1 = "(@)(@)"
         self.l2 = "      "
         self.l3 = "(@)(@)"
@@ -352,10 +257,7 @@ class ToppingCounter(limitLessAppliance):
         self.shape = "]"
         self.color = Color.toppingCounter
 
-        # linea1 = "(    )"
-        # linea2 = " )  ( "
-        # linea3 = "(____)"
-        self.type = type #0, 1, 2
+        self.type = type # can be 0, 1, 2
         self.l1 = "(====|"
         self.l2 = " ) * |"
         self.l3 = "(====|"
@@ -369,12 +271,7 @@ class ToppingCounter(limitLessAppliance):
                 return "|" + ingredientStr["pineapple"] + "   |"
 
         return self.l1
-#Pantry.ingredientStr["ham"]
-#Pantry.ingredientStr["pineapple"]
-#Pantry.ingredientStr["pepperoni"]
-#Pantry.ingredientStr["olives"]
-#Pantry.ingredientStr["onions"]
-#Pantry.ingredientStr["green_peppers"]
+
     def line2(self):
         if(self.type == 0):
                 return "|  " + ingredientStr["pepperoni"] + " |"
@@ -405,35 +302,9 @@ class Tank(limitLessAppliance):
         self.shape = ">"
         self.color = Color.tank
 
-        # ">o >0 "
-        # " >o >o"
-        # ">0 >o "
-        # self.l1 = ">o >0 "
-        # self.l2 = " >o >o"
-        # self.l3 = ">0 >o "
-        # self.l1 = "+~~~~+"
-        # self.l2 = "| >o |"
-        # self.l3 = "|____|"
-
         self.l1 = "║~~~~║"
         self.l2 = "║ >o ║"
         self.l3 = "╚════╝"
-
-        # self.l1 = "║~~~~~~~~~~║"
-        # self.l2 = "║ >o O< >o ║"
-        # self.l3 = "╚══════════╝"
-
-        
-
-    
-    def line1(self):
-        return self.color + self.l1 + self.reset
-
-    def line2(self):
-        return self.color + self.l2 + self.reset
-
-    def line3(self):
-        return self.color + self.l3 + self.reset
 
     def name(self):
         return "tank"
@@ -448,48 +319,5 @@ class Fridge(limitLessAppliance):
         self.l2 = "|  . |"
         self.l3 = "|    |"
 
-        # self.l1 = "╔══╦═╗"
-        # self.l2 = "╠══╬═╣"
-        # self.l3 = "╚══╩═╝"
-
-        # self.l1 = "╔═╦╦═╗"
-        # self.l2 = "╠═╬╬═╣"
-        # self.l3 = "╚═╩╩═╝"
-
-        # self.l1 = "╔═╗╦═╗"
-        # self.l2 = "╠═╬╬═╣"
-        # self.l3 = "╚═╩╩═╝"
-
-        
-
     def name(self):
         return "fridge"
-
-esBold = [" "] * 6
-esBold[0] = "███████╗░██████╗██████╗░██████╗░███████╗░██████╗░██████╗░█████╗░██╗░██████╗" + " " * 10
-esBold[1] = "██╔════╝██╔════╝██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝██╔══██╗╚█║██╔════╝" + " " * 10
-esBold[2] = "█████╗░░╚█████╗░██████╔╝██████╔╝█████╗░░╚█████╗░╚█████╗░██║░░██║░╚╝╚█████╗░" + " " * 10
-esBold[3] = "██╔══╝░░░╚═══██╗██╔═══╝░██╔══██╗██╔══╝░░░╚═══██╗░╚═══██╗██║░░██║░░░░╚═══██╗" + " " * 10
-esBold[4] = "███████╗██████╔╝██║░░░░░██║░░██║███████╗██████╔╝██████╔╝╚█████╔╝░░░██████╔╝" + " " * 10
-esBold[5] = "╚══════╝╚═════╝░╚═╝░░░░░╚═╝░░╚═╝╚══════╝╚═════╝░╚═════╝░░╚════╝░░░░╚═════╝░" + " " * 10
-
-class Express(Appliance):
-    def __init__(self, top="top", index=0):
-        super().__init__()
-        self.shape = "]"
-        self.color = Color.WHITE
-
-        l1Index = 0
-        l2Index = 1
-        l3Index = 2
-        if(top != "top"):
-            l1Index = 3
-            l2Index = 4
-            l3Index = 5
-
-        start = index * 6
-        end   = start + 6
-
-        self.l1 = (esBold[l1Index])[start:end]
-        self.l2 = (esBold[l2Index])[start:end]
-        self.l3 = (esBold[l3Index])[start:end]

@@ -1,21 +1,24 @@
-from tokenize import cookie_re
+"""
+  cook.py
+  Description: definition of a cook 
+
+  Authors: Patrick Gaughan
+"""
+
 from kitchen import Kitchen
 from pizza import Pizza
 from color import Color
 from pantry import Pantry
 from appliance import *
 from random import randint
-import time
 
 class Cook:
     def __init__(self, kitchen, row, col, fname):
-        #maybe some locking is needed later idk
         self.kitchen = kitchen
         self.row = row
         self.col = col
-        self.kitchen.put(self, row, col) #puts self into kitchen
+        self.kitchen.put(self, row, col) # add player to kitchen
         self.kitchen.player1 = self
-        self.row = row
         self.fname = fname
         self.holding = None
         self.color = Color.chef
@@ -36,41 +39,14 @@ class Cook:
         self.right = True
         self.justAte = False
 
-        # self.line1 = " MmmM "
-        # self.line2 = " |__| "
-        # self.line3 = " (oo) "
-
-        # self.line1 = " qmmp "
-        # self.line2 = " |__| "
-        # self.line3 = " (oo) "
-
-        # self.line1 = " |mm| "
-        # self.line2 = " (oo) "
-        # self.line3 = " -/\- "
-
-        # hat me
-        # self.line1 = " MmmM "
-        # self.line2 = " (oo) "
-        # self.line3 = " -[]- "
-
+        # strings for characters
         self.duckHatRight  = "  MmM "
         self.duckHeadRight = "  (o> "
         self.duckArmsRight = "<(__)"
-        #                    "  ||  "
 
         self.duckHatLeft = " MmM  "
         self.duckHeadLeft = " >o)  "
         self.duckArmsLeft =  "(__)>"
-        #                   "  ||  "
-        
-
-        # self.line1 = "    " "
-        # self.line2 = "\___Q "
-        # self.line3 = "/\ /\ "
-
-        # self.line1 = "()__()"
-        # self.line2 = "( oo )"
-        # self.line3 = "q    p"
 
         self.chefsHat = " MmmM "
         self.head     = " (oo) "
@@ -81,30 +57,9 @@ class Cook:
 
         self.feet     = "  ||  "
 
-        #self.hat  = " qmmp "
         self.line1 = " (oo) "
         self.line2 = " -[]-"
         self.line3 = "  ||  "
-
-        # self.line1 = " (oo) "
-        # self.line2 = "  []- "
-        # self.line3 = "  ||  "
-
-        # self.line1 = " (oo) "
-        # self.line2 = " -/\-"
-        # self.line3 = "  ||  "
-
-        # self.line1 = " ('') "
-        # self.line2 = " ~{}~ "
-        # self.line3 = "  !!  "
-
-        # self.line1 = " (XX) "
-        # self.line2 = " -()- "
-        # self.line3 = "  YY  "
-
-        # self.line1 = " (o0) "
-        # self.line2 = "  Y-  "
-        # self.line3 = "  |\  "
 
     def __str__(self):
         return Color.chef + "*" + "\033[00m"
@@ -153,7 +108,6 @@ class Cook:
                 else:
                     item = "raw pizza"
 
-            print("***********************"+ item)
             s = Pantry.ingredientStr[item]
             self.justAte = True
             if("[" in self.arms):
@@ -222,11 +176,6 @@ class Cook:
             return arms + self.stringHolding()
         else:
             return arms
-        # if(self.justAte):
-        #     #self.resetArms()
-        #     #self.justAte = False
-        #     return arms
-        # return arms + self.stringHolding()
 
     def stringArmsLeft(self, arms):
 
@@ -234,13 +183,8 @@ class Cook:
             return self.stringHolding() + arms
         else:
             return arms
-        # if(self.justAte):
-        #     #self.resetArms()
-        #     #self.justAte = False
-        #     return arms
-        # return self.stringHolding() + arms
 
-    #digest
+    # remove the food the character ate
     def resetArms(self):
         self.justAte = False
         if(" -[" in self.arms):
@@ -264,7 +208,6 @@ class Cook:
             return "*"
 
     def stringLegs(self):
-
         if(self.count == -1):
             return "  /|  "
         elif(self.count == 0):
@@ -313,6 +256,7 @@ class Cook:
             return self.name() + " holds " + self.holding.toString()
         return self.name() + " holds " + str(self.holding)
 
+    # commands
     def get_(self, ingredient):
         self.resetArms()
         if(not (ingredient in Pantry.pantry)):
@@ -323,11 +267,11 @@ class Cook:
 
         return self.give(ingredient)
 
-    #this can now make use of limitLessApplinces
+
     def commandGet(self):
         self.resetArms()
         thingsToGet = []
-        #lets see if we can get anything!
+        #ee if we can get anything
         appliances = self.nextToAnyObject()
         for appliance in appliances:
             for ingredient in Pantry.pantry:
@@ -348,11 +292,12 @@ class Cook:
 
         return self.give(thingsToGet[0])
 
+    # command
     def commandPut(self):
         if(not self.nextTo(WorkStation)):
             return False, "Can't put down item, not next to workstation"
 
-        workstation = self.nextToObject("workStation") # this function is the same funct but returns the object
+        workstation = self.nextToObject("workStation")
         if(self.holding == None):
             return False, "You're not holding anything"
 
@@ -365,7 +310,7 @@ class Cook:
 
         return True, "" #add workstation is holding
 
-
+    # command
     def commandTake(self):
         self.resetArms()
         if(not self.nextTo(WorkStation)):
@@ -381,7 +326,7 @@ class Cook:
         workstation.setPizza(None)
         return succ, msg
 
-
+    # command
     def commandBake(self):
         if(not self.nextTo(Oven)):
             return False, "Must be next to Oven to bake"
@@ -395,16 +340,11 @@ class Cook:
             return False, "Pizza already baked!"
         
         pizza.baked = True
-        print("Baking Pizza") #must fix
-        oven = self.nextToObject("oven")
-        oven.setColor(Color.stove)
-        #print(self.kitchen) #must fix
-        oven.setColor(Color.oven)
-        #time.sleep(1)
                 
         self.give(pizza)
         return True, "Pizza baked!"
 
+    # command
     def commandTrash(self):
         if(not self.nextTo(TrashCan)):
             return False, "Nothing to throw out"
@@ -412,6 +352,7 @@ class Cook:
         self.emptyHands()
         return True, ""
 
+    # command
     def commandServe(self):
         if(not self.nextTo(Counter)):
             return False, "must be next to counter to serve"
@@ -425,7 +366,6 @@ class Cook:
         return True, ""
         
 
-    #these will all be simplified soon
     def nextTo(self, clazz):
         nextTo = False
         nextTo = nextTo or self.kitchen.isClass(clazz, self.row+1, self.col)
@@ -448,7 +388,8 @@ class Cook:
         return None
 
     #return None if not next to anything
-    #otherwise return the first object that you are next to
+    # otherwise return the array of objects that you are next to
+    # within the kitchen
     def nextToAnyObject(self):
 
         objects = []
@@ -464,6 +405,8 @@ class Cook:
 
         return objects
 
+    # move to the row and col given within
+    # the kitchen
     def move(self, row, col):
         
         if(self.kitchen.outOfBounds(row, col)):
@@ -498,16 +441,20 @@ class Cook:
         #done changing look
         return True, ""
 
+    # move down in the kitchen
     def moveDown(self):
         return self.move(self.row+1, self.col)
 
+    # move up in the kitchen
     def moveUp(self):
         return self.move(self.row-1, self.col)
 
+    # move right in the kitchen
     def moveRight(self):
         self.right = True
         return self.move(self.row, self.col+1)
 
+    # move right in the kitchen
     def moveLeft(self):
         self.right = False
         return self.move(self.row, self.col-1)

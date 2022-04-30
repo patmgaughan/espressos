@@ -1,3 +1,13 @@
+"""
+  color.py
+  Description: Holds the strings needed to change the color 
+               of strings when printed to the terminal.
+               Holds the color of various objects as well 
+               as all possible colors for classes to use
+
+  Authors: Patrick Gaughan
+"""
+
 # keeps track of what color things should be when printing
 BLACK = "\033[90m"
 RED = "\033[91m"
