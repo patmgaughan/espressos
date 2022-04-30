@@ -94,7 +94,6 @@ async def message_producer(websocket, buffer):
         """
         await websocket.send(input("username: "))
         os.system("stty -echo")
-        print("here")
         try:
             while True:
                 key = getkey()
