@@ -1,3 +1,10 @@
+"""
+  server.py
+  Description: A module containing distributed espresso's express client code
+
+  Authors: Jackson Clayton
+"""
+
 import threading
 import time
 import asyncio

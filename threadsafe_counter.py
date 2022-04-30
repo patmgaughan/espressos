@@ -1,3 +1,10 @@
+"""
+  threadsafe_counter.py
+  Description: a threadsafe counter class
+
+  Authors: Jackson Clayton
+"""
+
 import threading
 
 class ThreadsafeCounter:

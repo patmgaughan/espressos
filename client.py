@@ -1,3 +1,9 @@
+"""
+  client.py
+  Description: A module containing distributed espresso's express client code
+
+  Authors: Jackson Clayton
+"""
 #!/usr/bin/env python
 
 import asyncio
