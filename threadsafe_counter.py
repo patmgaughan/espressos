@@ -1,6 +1,6 @@
 """
   threadsafe_counter.py
-  Description: TODO
+  Description: a threadsafe counter class
 
   Authors: Jackson Clayton
 """
