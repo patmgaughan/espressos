@@ -136,8 +136,8 @@ async def player_handler(websocket, start):
     print(f"username: {username}")
     # Initialize a new player in a start_position
     async with GAME['lock']:
-        pos = GAME['start_position'].get()
-        player = cook.Cook(GAME['kitchen'], pos, pos, username)
+        pos = GAME['kitchen'].START_POS.pop()
+        player = cook.Cook(GAME['kitchen'], pos[0], pos[1], username)
         GAME['players'].append(player)
     
     GAME['clients'].append(websocket)

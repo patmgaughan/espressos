@@ -31,17 +31,17 @@ async def client():
 
     args = parser.parse_args()
 
-    uri = f"ws://{args.i}:{args.p}"
+    uri = f"ws://{args.ip}:{args.port}"
 
     async with websockets.connect(uri, ping_interval=None) as websocket:
-        await websocket.send("input")
+        #await websocket.send("input")
         buffer = []
 
-        def producer_wrapper(ws):
-            message_producer(ws, buffer)
+        async def producer_wrapper(ws):
+            await message_producer(ws, buffer)
 
-        def receiver_wrapper(ws):
-            message_receiver(ws, buffer)
+        async def receiver_wrapper(ws):
+            await message_receiver(ws, buffer)
 
         # run producer and consumer until one returns
         consumer_task = asyncio.ensure_future(
