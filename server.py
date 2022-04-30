@@ -6,7 +6,6 @@ import websockets
 from pprint import pprint
 from player_ops import CMND_TO_FUNC
 from order_list import OrderList
-from order_generator import order_generator
 from order import Order
 from threadsafe_counter import ThreadsafeCounter
 
@@ -26,7 +25,7 @@ GAME = {}
 def stringGame(players, kitchen, order_list, order_counts):
 
     topFive = order_list.topFive()
-    gamestring = "\n"
+    gamestring = ""
 
     for lineNum in range(0, kitchen.totalLines()):
         line = kitchen.getLine(lineNum)

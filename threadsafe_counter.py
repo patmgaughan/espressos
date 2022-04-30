@@ -1,6 +1,9 @@
 import threading
 
 class ThreadsafeCounter:
+    """
+    Monitor class for a threadsafe counter
+    """
     def __init__(self, start = 0):
         self.lock = threading.Lock()
         self.count = start
