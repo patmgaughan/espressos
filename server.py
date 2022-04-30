@@ -3,50 +3,65 @@ import time
 import asyncio
 import argparse
 import websockets
-from pprint import pprint
+
+import kitchen
+import cook
 from player_ops import CMND_TO_FUNC
 from order_list import OrderList
 from order import Order
 from threadsafe_counter import ThreadsafeCounter
-
-
-import kitchen
-import cook
 from color import Color
 
 """
 Globals
 """
 CONNECTIONS = 0
-START = asyncio.Event()
-STOP = asyncio.Event()
 GAME = {}
 
-def stringGame(players, kitchen, order_list, order_counts):
 
-    topFive = order_list.topFive()
-    gamestring = ""
+"""
+Server Functions
+"""
+# stringGame()
+# Returns:  the game state in a string 
+# Purpose:  change the game state into a string
+#           which can be displayed
+def stringGame():
 
-    for lineNum in range(0, kitchen.totalLines()):
-        line = kitchen.getLine(lineNum)
+    topFive = GAME['order_list'].topFive()
+    gamestring = "\n"
+
+    for lineNum in range(0, GAME['kitchen'].totalLines()):
+        line = GAME['kitchen'].getLine(lineNum)
         linesBefore = 4
         if(lineNum == 0):
             gamestring += line + "\n"
         elif(lineNum == 1):
             gamestring += (line + " ---------------------" + "\n")
         elif(lineNum == 2):
-            gamestring += (line + "      Order Queue" + ("      Completed Orders: \033[32m{}".format(order_counts[0])) + Color.reset + "\n")
+            gamestring += (line + "      Order Queue" + ("      Completed Orders: \033[32m{}".format(GAME['completed'])) + Color.reset + "\n")
         elif(lineNum == 3):
-            gamestring += (line + " ---------------------" + (" Expired Orders:   \033[91m{}".format(order_counts[1])) + Color.reset + "\n")
+            gamestring += (line + " ---------------------" + (" Expired Orders:   \033[91m{}".format(GAME['expired'])) + Color.reset + "\n")
         elif ((lineNum - linesBefore) < 5) and ((lineNum - linesBefore) >= 0):
             gamestring += (line + str(lineNum-linesBefore+1) + ") " + topFive[lineNum - linesBefore] + "\n")
-        elif(lineNum >= 10 and lineNum < 10 + len(players)):
+        elif(lineNum >= 10 and lineNum < 10 + len(GAME['players'])):
 
-            gamestring += line + players[lineNum - 10].inventory() + "\n"
+            gamestring += line + GAME['players'][lineNum - 10].inventory() + "\n"
         else:
             gamestring += line + "\n"
 
     return gamestring
+
+
+
+# broadcast_state()
+# Returns:  Nothing
+# Purpose:  Sends all the clients the game state
+async def broadcast_state():
+    for ws in GAME['clients']:
+        await ws.send(stringGame())
+
+
 
 # choose_difficulty(difficulty)
 # Returns:  order rate, the decay rate, and the rate cap
@@ -71,6 +86,8 @@ def choose_difficulty(difficulty):
 
     return order_rate, decay_rate, rate_cap
 
+
+
 async def run_orders():
     global GAME
     order_rate, decay_rate, rate_cap = choose_difficulty(GAME['difficulty'])
@@ -86,74 +103,65 @@ async def run_orders():
         GAME['order_list'].add(order)
 
         order_rate = order_rate * decay_rate
-        print("inloop")
 
         # make sure the order_rate does not go below the rate cap
         if order_rate < rate_cap:
             order_rate = rate_cap
-
+        
+        # Add newly expired orders to our expired counter
         GAME['expired'].add(GAME['order_list'].removeExpired())
 
-        print(GAME['expired'].get())
-        if GAME['expired'].get() > 5:
-            print("GAMEOVER")
+        # Game is over once there are more than 10 orders
+        if GAME['expired'].get() > 10:
             GAME['game_over'].set()
             for ws in GAME['clients']:
                 await ws.send(f"gameover")
                 await ws.send(f"{GAME['completed']},{GAME['expired']}")
             break
+        
+        await broadcast_state()
 
-        print("about to send")
-        for ws in GAME['clients']:
-            await ws.send(stringGame(GAME['players'], GAME['kitchen'], GAME['order_list'], (GAME['completed'].get(), GAME['expired'].get())))
-
-        print("sent")
         await asyncio.sleep(order_rate)
 
-    print("out of while")
 
 
 
-async def output_handler(websocket, start):
+# player_handler(websocket, start)
+# Returns:  Nothing
+# Purpose:  Main server loop run for each client
+async def player_handler(websocket, start):
     global GAME
-    await start.wait()
-    for ws in GAME['clients']:
-            await ws.send(stringGame(GAME['players'], GAME['kitchen'], GAME['order_list'], (GAME['completed'], GAME['expired'])))
-
-    GAME['clients'].append(websocket)
-    while not GAME['game_over'].is_set():
-        await asyncio.sleep(1)
-
-
-
-async def input_handler(websocket, start):
-    global GAME
-    # await start.wait()
 
     username = await websocket.recv()
-
+    print(f"username: {username}")
+    # Initialize a new player in a start_position
     async with GAME['lock']:
         pos = GAME['start_position'].get()
         player = cook.Cook(GAME['kitchen'], pos, pos, username)
         GAME['players'].append(player)
-
+    
     GAME['clients'].append(websocket)
-    for ws in GAME['clients']:
-        await ws.send(stringGame(GAME['players'], GAME['kitchen'], GAME['order_list'], (GAME['completed'], GAME['expired'])))
+    
+    
+    await broadcast_state() 
 
+    # Once we have 2 clients, start the game
     if len(GAME['clients']) == 2:
         for ws in GAME['clients']:
             await ws.send("start")
-    for ws in GAME['clients']:
-        await ws.send(stringGame(GAME['players'], GAME['kitchen'], GAME['order_list'], (GAME['completed'], GAME['expired'])))
-
+    
     while not GAME['game_over'].is_set():
+        
+        # In order to prevent the case of waiting endlessly for a recv 
+        # after the game is over, our client always signals that the game is over
+        # when it is over  
         resp = await websocket.recv()
         if resp == "gameover":
             break
 
         async with GAME['lock']:
-
+            
+            # Parse command give and then run it
             if (resp.startswith("get_")):
                 arg1 = resp.replace('get_', '')
                 resp = "get_"
@@ -161,14 +169,14 @@ async def input_handler(websocket, start):
             func_name = CMND_TO_FUNC.get(resp)
 
             if not func_name:
-                await websocket.send(stringGame(GAME['players'], GAME['kitchen'], GAME['order_list'], (GAME['completed'], GAME['expired'])))
+                await websocket.send(stringGame())
                 continue
 
             print(f"<<< {func_name}")
 
 
             func = getattr(player, func_name)
-            # check if game over
+
             if resp == "serve":
                 succ, msg = func()
                 if succ:
@@ -178,78 +186,69 @@ async def input_handler(websocket, start):
                         GAME['completed'].increment()
                     else:
                         player.give(pizza)
+
             elif (resp == "get_"):
                 succ, msg = func(arg1)
+
             else:
                 func()
 
-        for ws in GAME['clients']:
-            await ws.send(stringGame(GAME['players'], GAME['kitchen'], GAME['order_list'], (GAME['completed'], GAME['expired'])))
+        await broadcast_state() 
 
 
 
-    print("OUTOFWHILE")
-
-
-
+# handler(websocket, start, stop)
+# Returns:  Nothing
+# Purpose:  Handle setting up the game state, running 
+#           the order task once two players have connected
+#           and then starting the game
 async def handler(websocket, start, stop):
     global GAME
     global CONNECTIONS
 
-    type = await websocket.recv()
-    print(f"type is {type}")
- 
     CONNECTIONS += 1 
    
     order_task = None 
     task = None
-    print(f"Connections: {CONNECTIONS}")
+    
+    # First connection is responsible for setting up the game state
     if CONNECTIONS == 1:
-        print("Setting up game")
         kitch = kitchen.Kitchen()
         kitch.setUp()
         GAME['kitchen'] = kitch
 
         GAME['clients'] = []
         GAME['players'] = []
-        start_pos = ThreadsafeCounter()
-        GAME['start_position'] = start_pos
+        GAME['start_position'] = ThreadsafeCounter()
 
-        order_list = OrderList()
-        GAME['order_list'] = order_list
+        GAME['order_list'] = OrderList()
 
         completed_orders = ThreadsafeCounter()
-        expired_orders = ThreadsafeCounter()
-        GAME['completed'] = completed_orders
-        GAME['expired'] = expired_orders
+        GAME['completed'] = ThreadsafeCounter()
+        GAME['expired'] = ThreadsafeCounter()
+        GAME['game_over'] = asyncio.Event()
+        GAME['lock'] = asyncio.Lock()
 
-        game_over = threading.Event()
-        GAME['game_over'] = game_over
-        
-        lock = asyncio.Lock()
-        GAME['lock'] = lock
-
+    # Second player is resonsible for creating the order task
     if CONNECTIONS == 2:
         order_task = asyncio.create_task(run_orders())
         start.set()
         
 
- 
-    if type == "input":
-        task = asyncio.create_task(input_handler(websocket, start))    
-    elif type == "output":
-        task = asyncio.create_task(output_handler(websocket, start))    
-
+    task = asyncio.create_task(player_handler(websocket, start))    
+    
+    # Await tasks until they return 
     if order_task is not None:
-        print("making order task")
         await order_task
-    print("about to do it")
-    await task
-    print("awaiting both tasks")
 
+    await task
+    
+    # Once every connection has returned from its task
+    # we can signal the server to stop
     CONNECTIONS -= 1
     if CONNECTIONS == 0:
         stop.set()
+
 
 
 async def main():
@@ -278,13 +277,17 @@ async def main():
 
     args = parser.parse_args()
     GAME['difficulty'] = args.d
+    
     start = asyncio.Event()
     stop = asyncio.Event()
-    # wrap handler 
+    
+    # asyncio.Event() can't be global, thus we must initialize them here
+    # and wrap them with handler 
     handler_fun = lambda websocket: handler(websocket, start, stop)
  
     async with websockets.serve(handler_fun, args.i, args.p, ping_interval=None):
         await stop.wait()
+
 
 if __name__ == "__main__":
     asyncio.run(main())
