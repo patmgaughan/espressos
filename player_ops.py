@@ -1,3 +1,11 @@
+"""
+  player_ops.py
+  Description: A module containing the commands and the names of their
+               corresponding functions
+
+  Authors: Jackson Clayton
+"""
+
 from cook import Cook
 
 CMND_TO_FUNC = {"w":"moveUp", "s":"moveDown", "a":"moveLeft", "d":"moveRight",\
