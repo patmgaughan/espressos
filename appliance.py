@@ -32,8 +32,8 @@ ingredientStr = {
 class Appliance:
     def __init__(self):
         self.shape = "-"
-        self.color = "\033[00m"
-        self.reset = "\033[00m" 
+        self.color = Color.BLACK
+        self.reset = Color.reset 
 
         self.l1 = "+----+"
         self.l2 = "|    |"
