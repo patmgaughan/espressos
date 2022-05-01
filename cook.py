@@ -29,6 +29,8 @@ class Cook:
         self.count = 0
         self.up = True
 
+        self.msg = ""
+
         self.hat = False
         j = randint(0, 2)
         if(j == 2):
@@ -41,6 +43,8 @@ class Cook:
 
         self.right = True
         self.justAte = False
+
+        self.standingLegs     = "  ||  "
 
         # strings for characters
         self.duckHatRight  = "  MmM "
@@ -69,34 +73,40 @@ class Cook:
         self.head          = " (" + Color.CYAN + "oo" + Color.reset + ") "
         self.duckHeadRight = "  (" + Color.CYAN + "o" + Color.reset + "> "
         self.duckHeadLeft  = " >" + Color.CYAN + "o" + Color.reset + ")  "
-        return True, "Lovely Eyes"
+        return True, "Better to see you with my dear"
 
     # changes eyes back to white
     def noMileyCyrus(self):
         self.head          = " (oo) "
         self.duckHeadRight = "  (o> "
         self.duckHeadLeft  = " >o)  "
-        return True, "Lovely Eyes"
+        return True, "Well look at that"
 
     # makes the person wear a dress
     def wearDress(self):
         self.arms = " -/\-"
-        return True, "Looking Good!"
+        return True, "I feel pretty"
 
     #makes the person wear a shirt
     def wearShirt(self):
         self.arms = " -[]-"
-        return True, "Looking Good!"
+        return True, "Is this shirt a bit too boxy?"
 
     # toggels if the person is wearing a hat
     def toggleHat(self):
         self.hat = not self.hat
-        return True, "Looking Good!"
+        if(self.hat):
+            return True, "Looking Good!"
+        else:
+            return True, "Looking Good!"
 
     # toggles if the person is a chef
     def toggleDuck(self):
         self.duck = not self.duck
-        return True, "Quack Quack"
+        if(self.duck):
+            return True, "Quack, Quack, Quack"
+        else:
+            return True, "Hello, Hello, Hello"
 
     # command for player to eat. If they are holding anything
     # it is removed from their hands and shown to be in their
@@ -120,7 +130,7 @@ class Cook:
             self.duckArmsLeft =  "(" + s + "__)>"
             return True, "Yum"
         else:
-            return False, "Nothing to Eat!"
+            return False, "There's nothing to eat :("
 
     # prints the first line of a cook
     def stringline1(self):
@@ -134,6 +144,19 @@ class Cook:
                 return self.duckHeadRight
             else:
                 return self.duckHeadLeft
+
+        if(self.hat):
+            return self.chefsHat
+        else:
+            return self.head
+
+    # prints the first line of a cook
+    def line1Simple(self):
+        if(self.duck and self.hat):
+            return self.duckHatRight
+
+        elif(self.duck):
+            return self.duckHeadRight
 
         if(self.hat):
             return self.chefsHat
@@ -158,6 +181,21 @@ class Cook:
         else:
             return self.stringArms(self.arms)
 
+    def line2Simple(self):
+        if(self.duck and self.hat):
+            return self.duckHeadRight
+
+        elif(self.duck):
+            return "<(__) "
+
+        if(self.hat):
+            return self.head
+        else: #fix
+            if("[" in self.arms):
+                return " -[]- "
+            else:
+                return " -/\- "
+
     # print the 3rd line of a cook
     def stringline3(self):
         if(self.duck and self.hat):
@@ -173,6 +211,25 @@ class Cook:
         else:
             #only change walking when not wearing hat
             return self.stringLegs()
+
+
+    # print the 3rd line of a cook sans animations
+    def line3Simple(self):
+        if(self.duck and self.hat):
+
+            return "<(__) "
+
+        elif(self.duck):
+            return self.standingLegs
+
+        if(self.hat): #fix
+            if("[" in self.arms):
+                return " -[]- "
+            else:
+                return " -/\- "
+        else:
+            #only change walking when not wearing hat
+            return self.standingLegs
 
     # returns the string rep of a cook's arms for
     # people and ducks facing right
@@ -276,6 +333,13 @@ class Cook:
             return self.name() + " holds " + self.holding.toString()
         return self.name() + " holds " + str(self.holding)
 
+    def setMsg(self, msg):
+        self.msg = msg
+
+    # returns a string that msg response from the last command
+    def msgString(self):
+        return self.msg
+
     # commands
     # allows a gook to attempt to get an ingredient from
     # any appliances that they are next to
@@ -284,10 +348,10 @@ class Cook:
     def get_(self, ingredient):
         self.resetArms()
         if(not (ingredient in Pantry.pantry)):
-            return False, "Ingredient \"" + ingredient +\
-                           "\" unknown: try \"-h\""
+            return False, "I don't know the ingreident \"" + ingredient +\
+                           "\", type \"h\" for help"
         if(not self.nextTo(Pantry.pantry[ingredient])):
-            return False, "Can't get " + str(ingredient) +\
+            return False, "I can't get " + str(ingredient) +\
                     ", not standing next to " + \
                    str(Pantry.pantry[ingredient])
 
@@ -308,7 +372,7 @@ class Cook:
                 if(isinstance(appliance, Pantry.pantry[ingredient])):
                     thingsToGet.append(ingredient)
         if(len(thingsToGet) == 0):
-            return False, "Sorry, must be next to an appliance to get things"
+            return False, "I have to be next to an appliance to get things"
         elif(len(thingsToGet) > 1):
             item = self.emptyHands()
             if(item == None):
@@ -318,7 +382,11 @@ class Cook:
                 self.give(thingsToGet[i])
             else:
                 self.give(item)
-            return True, "Possible things to get: " + str(thingsToGet)
+
+            msg = "I could also get "
+            for thing in thingsToGet:
+                msg += str(thing) + ", "
+            return True, msg 
 
         return self.give(thingsToGet[0])
 
@@ -329,11 +397,11 @@ class Cook:
     # and removed from cook's hand. Else it is not added to the workstation
     def commandPut(self):
         if(not self.nextTo(WorkStation)):
-            return False, "Can't put down item, not next to workstation"
+            return False, "I can't put this, I'm not next to a workstation"
 
         workstation = self.nextToObject("workStation")
         if(self.holding == None):
-            return False, "You're not holding anything"
+            return False, "I'm not holding anything"
 
 
         item = self.emptyHands() 
@@ -341,7 +409,7 @@ class Cook:
          # put what I was holding at the workstation
         self.holding = workstation.put(item)
         if(self.holding != None): 
-            return False, "Workstation is full"
+            return False, "The workstation is full"
 
         return True, "" #add workstation is holding
 
@@ -352,13 +420,13 @@ class Cook:
     def commandTake(self):
         self.resetArms()
         if(not self.nextTo(WorkStation)):
-            return False, "Error not next to workstation"
+            return False, "I need to be next to workstation"
 
         workstation = self.nextToObject("workStation")
         item = workstation.myPizza()
 
         if(item == None):
-            return False, "Error workstation empty"
+            return False, "This workstation is empty"
 
         succ, msg = self.give(workstation.myPizza())
         workstation.setPizza(None)
@@ -369,27 +437,27 @@ class Cook:
     # hodling a raw pizza, then the pizza becomes baked
     def commandBake(self):
         if(not self.nextTo(Oven)):
-            return False, "Must be next to Oven to bake"
+            return False, "I must be next to Oven to bake"
 
         pizza = self.emptyHands()
         if(not isinstance(pizza, Pizza)):
             self.give(pizza)
-            return False, "Sorry, can only bake Pizza in oven"
+            return False, "I can bake Pizza in the oven"
         elif(pizza.baked == True):
             self.give(pizza)
-            return False, "Pizza already baked!"
+            return False, "My pizza already baked!"
         
         pizza.baked = True
                 
         self.give(pizza)
-        return True, "Pizza baked!"
+        return True, "Smells Good!"
 
     # command
     # if the cook is next to a trash can then
     # they throw out the item that they are holding
     def commandTrash(self):
         if(not self.nextTo(TrashCan)):
-            return False, "Nothing to throw out"
+            return False, "I have nothing to throw out"
 
         self.emptyHands()
         return True, ""
@@ -401,15 +469,15 @@ class Cook:
     # else the player keeps the pizza
     def commandServe(self):
         if(not self.nextTo(Counter)):
-            return False, "must be next to counter to serve"
+            return False, "I must be next to counter to serve"
 
         if(not isinstance(self.holding, Pizza)):
-            return False, "Must hold a pizza to serve"
+            return False, "I must hold a pizza to serve"
 
         if(self.holding.baked != True):
-            return False, "Must bake pizza before you serve it!"
+            return False, "I can't serve a raw pizza, let me go bake it"
 
-        return True, ""
+        return True, "Enjoy!"
         
     # looks at the four spaces in the kitchen that the cook is next to
     # and returns true if any of them are have the same class as the 
@@ -465,13 +533,13 @@ class Cook:
             self.count = 0
             self.line3 = "  ||  "
             #end change look
-            return False, ""
+            return False, "Something's in my way"
         if(not self.kitchen.isEmpty(row, col)):
             #change look
             self.count = 0
             self.line3 = "  ||  "
             #end change look
-            return False, ""
+            return False, "Something's in my way"
 
         #we will be moving
         self.resetArms()

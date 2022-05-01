@@ -1,6 +1,9 @@
 """
   client.py
-  Description: A module containing distributed espresso's express client code
+  Description: A module containing distributed espresso's 
+               express client code. The client is given 
+               a string that represents the game and enters
+               commands to interact in the game
 
   Authors: Jackson Clayton
 """

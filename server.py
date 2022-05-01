@@ -1,6 +1,11 @@
 """
   server.py
-  Description: A module containing distributed espresso's express client code
+  Description: A module containing distributed espresso's 
+               express server code. Gets updates about
+               orders and commands from clients. Executes
+               all the game commands that are given and sents
+               out a new version of the game state to
+               all players when updates arrive
 
   Authors: Jackson Clayton
 """
@@ -37,29 +42,64 @@ def stringGame():
 
     topFive = GAME['order_list'].topFive()
     gamestring = "\n"
+    playerPrintStart = 10
+    playerPrintSize = 5
 
     for lineNum in range(0, GAME['kitchen'].totalLines()):
         line = GAME['kitchen'].getLine(lineNum)
+        totalPlayers = len(GAME['players'])
+        playerNum = (lineNum - playerPrintStart) // playerPrintSize
+        # player line is between 0 and 4
+        playerLine = (lineNum - playerPrintStart) % playerPrintSize
+
         linesBefore = 4
         if(lineNum == 0):
             gamestring += line + "\n"
         elif(lineNum == 1):
-            gamestring += (line + " ---------------------" + "\n")
+            gamestring += (line + " " + " ---------------------" + "\n")
         elif(lineNum == 2):
-            gamestring += (line + "      Order Queue" + ("      Completed Orders: \033[32m{}".format(GAME['completed'])) + Color.reset + "\n")
+            gamestring += (line + " " + "      Order Queue" + 
+             ("      Completed Orders: \033[32m{}".format(GAME['completed'])) +
+             Color.reset + "\n")
         elif(lineNum == 3):
-            gamestring += (line + " ---------------------" + (" Expired Orders:   \033[91m{}".format(GAME['expired'])) + Color.reset + "\n")
+            gamestring += (line + " " + " ---------------------" + 
+             (" Expired Orders:   \033[91m{}".format(GAME['expired'])) + 
+             Color.reset + "\n")
         elif ((lineNum - linesBefore) < 5) and ((lineNum - linesBefore) >= 0):
-            gamestring += (line + str(lineNum-linesBefore+1) + ") " + topFive[lineNum - linesBefore] + "\n")
-        elif(lineNum >= 10 and lineNum < 10 + len(GAME['players'])):
+            gamestring += (line + str(lineNum-linesBefore+1) + ") " 
+                       + topFive[lineNum - linesBefore] + "\n")
 
-            gamestring += line + GAME['players'][lineNum - 10].inventory() + "\n"
+        elif(playerNum >= 0 and playerNum < totalPlayers):
+
+            player = GAME['players'][playerNum]
+            msg = player.msgString()
+            msgLen = len(msg)
+
+            msgLine0 = ""
+            msgLine1 = ""
+            msgLine2 = ""
+            msgLine3 = ""
+
+            if(msgLen > 0):
+                msgLine0 = "  _" + ("_" * msgLen) + "_ "
+                msgLine1 = " / " + (" " * msgLen) + " \\"
+                msgLine2 = "<  " + msg            + " |"
+                msgLine3 = " \_" + ("_" * msgLen) + "_/"
+
+            if(playerLine == 0):
+                gamestring += line + " " + "      "              + msgLine0 + "\n"
+            if(playerLine == 1):
+                gamestring += line + " " + player.line1Simple() + msgLine1 + "\n"
+            elif(playerLine == 2):
+                gamestring += line + " " + player.line2Simple() + msgLine2 + "\n"
+            elif(playerLine == 3):
+                gamestring += line + " " + player.line3Simple() + msgLine3 + "\n"
+            elif(playerLine == 4):
+                gamestring += line + " " + player.inventory() + "\n"
         else:
             gamestring += line + "\n"
 
     return gamestring
-
-
 
 # broadcast_state()
 # Returns:  Nothing
@@ -67,8 +107,6 @@ def stringGame():
 async def broadcast_state():
     for ws in GAME['clients']:
         await ws.send(stringGame())
-
-
 
 # choose_difficulty(difficulty)
 # Returns:  order rate, the decay rate, and the rate cap
@@ -186,9 +224,13 @@ async def player_handler(websocket, start):
 
             if resp == "serve":
                 succ, msg = func()
+                #set player msg
+                player.setMsg(msg)
                 if succ:
                     pizza = player.emptyHands()
                     succ, msg = GAME['order_list'].fulfillOrder(pizza)
+                    #set player msg
+                    player.setMsg(msg)
                     if succ:
                         GAME['completed'].increment()
                     else:
@@ -196,9 +238,13 @@ async def player_handler(websocket, start):
 
             elif (resp == "get_"):
                 succ, msg = func(arg1)
+                #set player msg
+                player.setMsg(msg)
 
             else:
-                func()
+                succ, msg = func()
+                #set player msg
+                player.setMsg(msg)
 
         await broadcast_state() 
 
