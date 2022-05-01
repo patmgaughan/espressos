@@ -331,6 +331,8 @@ class Cook:
     def inventory(self):
         if(isinstance(self.holding, Pizza)):
             return self.name() + " holds " + self.holding.toString()
+        if(self.holding == None):
+            return self.name()
         return self.name() + " holds " + str(self.holding)
 
     def setMsg(self, msg):

@@ -66,7 +66,10 @@ def stringGame():
              (" Expired Orders:   \033[91m{}".format(GAME['expired'])) + 
              Color.reset + "\n")
         elif ((lineNum - linesBefore) < 5) and ((lineNum - linesBefore) >= 0):
-            gamestring += (line + str(lineNum-linesBefore+1) + ") " 
+            if(topFive[lineNum - linesBefore] == "Empty"):
+                gamestring += line + "\n"
+            else:
+                gamestring += (line + " " + str(lineNum-linesBefore+1) + ") " 
                        + topFive[lineNum - linesBefore] + "\n")
 
         elif(playerNum >= 0 and playerNum < totalPlayers):
